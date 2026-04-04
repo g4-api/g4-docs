@@ -19,48 +19,68 @@ This has two important consequences:
 
 ## Driver Configuration
 
-Drivers are configured per automation via the `driverParameters` object. At minimum, you specify the driver and how to reach it:
+Drivers are configured per automation via the `driverParameters` object. The two G4-specific fields are `driver` and `driverBinaries`:
+
+| Field | Description |
+|---|---|
+| `driver` | The driver key from the server manifest. See [Discovering Available Drivers](#discovering-available-drivers). |
+| `driverBinaries` | Path to a local driver binary, or the remote address of a running driver service. Both local and remote targets use the same field. |
 
 ```json
 {
   "driverParameters": {
     "driver": "DriverName",
-    "driverBinaries": "/path/to/driver/binary"
+    "driverBinaries": "/path/to/driver  or  http://remote-host:4444"
   }
 }
 ```
 
-For remote drivers (those that run as a separate service):
+The value of `driver` must match the `key` field from the server manifest (see [Discovering Available Drivers](#discovering-available-drivers) below). Which drivers are available depends on what is installed in your environment — G4 does not ship with a fixed driver set.
+
+### Capabilities — WebDriver New Session Structure
+
+G4 passes capabilities to the driver using the standard **WebDriver W3C new session** structure — `alwaysMatch` and `firstMatch` — without any deviation. This is the same structure the WebDriver spec defines for the `POST /session` request.
 
 ```json
 {
   "driverParameters": {
     "driver": "DriverName",
-    "remoteAddress": "http://localhost:4723"
-  }
-}
-```
-
-The value of `driver` must match the `key` field of the driver entry returned by the server manifest (see [Discovering Available Drivers](#discovering-available-drivers) below). Which drivers are available depends on what is installed in your environment — G4 does not ship with a fixed driver set.
-
-### Capabilities
-
-The `capabilities` object passes driver-specific options at session creation time. These vary by driver:
-
-```json
-{
-  "driverParameters": {
-    "driver": "DriverName",
-    "driverBinaries": ".",
+    "driverBinaries": "/path/to/driver",
     "capabilities": {
-      "pageLoadTimeout": 30000,
-      "implicitWaitTimeout": 5000
+      "alwaysMatch": {
+        "browserName": "chrome"
+      },
+      "firstMatch": [
+        {}
+      ]
     }
   }
 }
 ```
 
-Capabilities are passed directly to the driver during session initialization. Refer to the documentation of the specific driver for supported capability keys.
+Driver-specific options go under their designated vendor extension key, following each driver's own convention. For example:
+
+```json
+{
+  "driverParameters": {
+    "driver": "DriverName",
+    "driverBinaries": "/path/to/driver",
+    "capabilities": {
+      "alwaysMatch": {
+        "browserName": "chrome",
+        "goog:chromeOptions": {
+          "args": ["--headless", "--disable-gpu", "--no-sandbox"]
+        }
+      },
+      "firstMatch": [
+        {}
+      ]
+    }
+  }
+}
+```
+
+The vendor prefix (e.g., `goog:`, `moz:`, `appium:`) is defined by the driver, not by G4. Refer to the documentation of the specific driver for its supported capability keys and vendor namespace.
 
 ---
 
