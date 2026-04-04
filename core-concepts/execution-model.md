@@ -72,7 +72,7 @@ Session lifecycle is determined by the context configuration of each stage and j
 
 In the most common case — a single stage with one or more jobs sharing the same session — the lifecycle is:
 
-```
+```none
 Engine receives workflow
     ↓
 Driver session opened (automation level)
@@ -109,19 +109,17 @@ The engine manages session open/close boundaries transparently. You declare the 
 
 ## Failure Handling
 
-G4 is designed to fail precisely, not silently.
+By default, G4 fails silently and continues. When a step fails, the exception is captured and added to the `exceptions` array in the affected session's `responseData`, and execution proceeds to the next step. The session runs to completion regardless of how many failures occur along the way.
 
-**Step failure** stops the current job and records the error with full context — stage, job, step, driver session, and the driver's response. The error appears in the `exceptions` array of the affected session's `responseData`.
+This default exists by design. In automation and crawling scenarios, partial failures are normal — a missing element, a transient network error, a page that didn't load as expected. Stopping the entire run on the first failure would make large-scale workflows impractical. Instead, G4 collects all failures and delivers them with the results for analysis after the run.
 
-**Other jobs in the same stage** continue executing unless the workflow is configured to abort on any failure.
+**If you want the session to stop on failure**, configure `engineSettings` on the automation (the parent of stages). This is covered in the Engine Settings reference. Stop-on-failure is an opt-in, not the default.
 
-**Validation failures** are recorded in the output as part of the extraction results. A record that fails schema validation does not crash the run — it is captured with its validation result so the caller can inspect and handle it.
-
-**Steps can be marked non-critical.** A step that is expected to sometimes fail — a conditional check, an optional extraction — can be configured to allow the job to continue past its failure without treating the workflow run as failed.
+**Validation failures** follow the same pattern. A record that fails schema validation is captured in the output alongside its validation result — the run does not stop.
 
 ### Failure Context in the Response
 
-Every exception in the response carries the full reference chain — which automation, stage, job, step, and driver session it came from — making it possible to trace any failure back to its exact location in the workflow without re-running or guessing.
+Every exception carries the full reference chain — automation, stage, job, step, and driver session — making it possible to trace any failure back to its exact location in the workflow without re-running or guessing.
 
 ---
 
