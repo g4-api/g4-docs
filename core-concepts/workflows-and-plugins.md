@@ -30,13 +30,13 @@ Workflows are language-agnostic. There is no scripting, no runtime, and no SDK r
 
 | Field | Description |
 |---|---|
-| `authentication` | Credentials used during session setup (`username`, `password`, `token`). |
-| `automationSession` | Session identifier for resuming or attaching to an existing automation session. |
+| `authentication` | G4 authentication credentials (`username`, `password`, `token`). Tokens are issued by G4 Services — see the [Development License](https://github.com/g4-api/g4-services?tab=readme-ov-file#development-license) for free tier access. |
+| `automationSession` | Auto-populated and managed by the engine when a session is created. Not set by the user. |
 | `dataSource` | External data source configuration — repository, filters, and auth for input data. |
-| `driverParameters` | Which driver to use and how to reach it. See [Drivers & Surfaces](drivers-and-surfaces.md). |
-| `driverSession` | An existing driver session to attach to instead of opening a new one. |
-| `groupId` | The automation group identifier. Appears as the top-level key in the response. |
-| `reference` | Metadata — name, description, and ID for this automation run. |
+| `driverParameters` | Which driver to use and how to reach it. See [Drivers & Surfaces](drivers-and-surfaces.md). To attach to an existing driver session, set `driver` to `"Id(<driverSessionId>)"`. |
+| `driverSession` | Auto-populated and managed by the engine. Not set by the user. |
+| `groupId` | Groups all instances of this automation created together — across distributed workers and data-driven runs. Appears as the top-level key in the response. |
+| `reference` | User-level identity for this automation or bot — name, description, ID. Auto-assigned if not provided. |
 | `settings` | Engine behavior configuration. See [Settings](#settings) below. |
 | `stages` | The execution tree — stages, jobs, and rules. |
 
@@ -76,6 +76,7 @@ The `settings` object controls engine behavior for the run:
 		},
 		"pluginsSettings": {
 			"externalRepositories": [ ... ],
+			"servers": [ ... ],
 			"forceRuleReference": true
 		},
 		"screenshotsSettings": {
@@ -92,10 +93,11 @@ Settings are covered in full in the Engine Settings reference. Notable fields:
 
 | Field | Description |
 |---|---|
-| `automationSettings.maxParallel` | Maximum number of jobs that may run in parallel within a stage. |
-| `automationSettings.returnRules` | Include the per-rule execution trace in the response. |
-| `environmentsSettings.environmentVariables` | Named environments with key/value parameter sets, available via `{{$parameterName}}` interpolation. |
-| `pluginsSettings.externalRepositories` | External plugin sources — RPC endpoints, MCP tools, or any G4-protocol-compatible repository. See [External Plugin Repositories](#external-plugin-repositories). |
+| `automationSettings.maxParallel` | Scale throttle — maximum number of automations that may run concurrently. Execution is FIFO: as soon as one automation completes, the next starts. Optimizes CPU utilization without over-committing resources (e.g., 10 pods should not run 1000 simultaneous automations). |
+| `automationSettings.returnRules` | Per-rule results always return. This controls whether the rule itself — the request and the rule response — is included alongside the results. Useful for fine-tuning automation behavior. |
+| `environmentsSettings.environmentVariables` | Named environments with key/value parameter sets. Access parameters at runtime via `{{$Get-Parameter --Name:<parameterName> --Scope:Application}}`. |
+| `pluginsSettings.externalRepositories` | Code-agnostic external plugin sources served over HTTP (G4 protocol). See [External Plugin Repositories](#external-plugin-repositories). |
+| `pluginsSettings.servers` | MCP server connections — standard MCP settings object. Connected MCP tools are resolved into the tools catalog as first-class plugins. |
 | `screenshotsSettings.onExceptionOnly` | Capture screenshots only on failure rather than for every step. |
 
 ---
@@ -136,8 +138,8 @@ Each stage is an object with the following key fields:
 | `driverParameters` | Stage-level driver override — opens an isolated session for this stage. |
 | `driverSession` | Attach to a specific existing session instead of using the inherited one. |
 | `failOnException` | Stop this stage on first exception instead of the default silent-and-continue behavior. |
-| `ignoredExceptions` | Exception types to suppress — not recorded, not counted. |
-| `dependencies` | Stage names that must complete before this stage begins. |
+| `ignoredExceptions` | Exception types to suppress — not recorded, not counted, and will not trigger `failOnException` even when it is set. |
+| `dependencies` | IDs of stages (from their `reference` field) that must complete before this stage begins. |
 
 ### Jobs
 
@@ -187,11 +189,11 @@ A rule is a single plugin invocation. The `pluginName` field references the plug
 |---|---|
 | `pluginName` | The `key` of the plugin to invoke, from the plugin manifest. |
 | `argument` | Primary input to the plugin — a URL, a value, a command, a count, etc. |
-| `onElement` | Target element selector — CSS, XPath, or driver-specific locator. |
-| `locator` | Locator strategy for `onElement` (e.g., `CssSelector`, `XPath`). |
+| `onElement` | Target element selector — CSS, Xpath, or driver-specific locator. |
+| `locator` | Locator strategy for `onElement` (e.g., `CssSelector`, `Xpath`). |
 | `onAttribute` | Attribute to read or write on the target element. |
-| `regularExpression` | Pattern applied to extracted content before storing. |
-| `capabilities` | Rule-level capability overrides passed to the driver. |
+| `regularExpression` | Pattern applied to the value before any further processing — extraction, transformation, storage, or comparison. |
+| `capabilities` | User-level metadata for the rule. Not related to the driver. Used by tooling (e.g., the SWF UI stores a user-assigned label or display name here). |
 | `dataCollector` | Extraction schema — what to collect and where to store it. See [ETL & Data Pipelines](etl-and-data-pipelines.md). |
 | `transformers` | Ordered list of transformations applied to the extracted value. |
 | `rules` | Nested rules — child steps executed within a container plugin (e.g., loop body). |
@@ -207,11 +209,11 @@ A plugin is any implementation that abides by the G4 protocol. The engine dispat
 | Type | Description |
 |---|---|
 | Built-in G4 actions | Native implementations shipped with the engine — browser control, flow control, data operations, system utilities |
-| G4 Protocol implementations | Any code that implements the G4 plugin protocol — any language, any runtime, any environment |
-| MCP tools | Tools connected through the G4 MCP dispatcher become catalog entries and are invocable as rules |
-| External RPC repositories | Remote plugin repositories served over the G4 protocol — registered via `pluginsSettings.externalRepositories` |
+| G4 SDK plugins | .NET implementations using the [G4 API Client SDK](https://github.com/g4-api/g4-api-client). Referenced by the g4.hub or placed under the plugins directory. Covered in full in the G4 Plugins reference. |
+| MCP tools | MCP servers configured via `pluginsSettings.servers`. Connected tools are resolved into the catalog and invocable as first-class rules. |
+| External RPC repositories | Code-agnostic plugin sources served over HTTP using the G4 protocol. Any language, any runtime. Registered via `pluginsSettings.externalRepositories`. |
 
-All four types are resolved and dispatched identically. The workflow does not know or care whether a plugin is built-in, local, remote, or AI-connected.
+All types are resolved and dispatched identically. The workflow does not know or care whether a plugin is built-in, SDK-based, MCP-connected, or served remotely over HTTP.
 
 ### Discovering Available Plugins
 
@@ -231,7 +233,7 @@ GET <serverUrl>/api/v4/g4/integration/manifests/plugins/<key>
 
 ### External Plugin Repositories
 
-External plugins — remote RPC implementations, MCP-connected tools, or any G4-protocol-compatible source — are registered in `settings.pluginsSettings.externalRepositories`:
+External plugin repositories are code-agnostic plugin sources served over HTTP using the G4 protocol. Any language or runtime can expose plugins this way. They are registered in `settings.pluginsSettings.externalRepositories`:
 
 ```json
 {
@@ -263,6 +265,12 @@ External plugins — remote RPC implementations, MCP-connected tools, or any G4-
 
 Once registered, all plugins exposed by the repository are resolved into the tools catalog for the duration of the automation run and are available as first-class rules.
 
+### MCP Servers
+
+MCP server connections are configured via `settings.pluginsSettings.servers` using the standard MCP settings object. Tools exposed by connected MCP servers are resolved into the tools catalog and become first-class plugins — invocable as rules in any workflow, indistinguishable from built-in or SDK-based plugins.
+
+See [G4 MCP](../products/g4-mcp.md) for the full dispatcher architecture and MCP integration reference.
+
 ### Nested Plugins
 
 Container plugins execute child rules within their own context. A loop plugin repeats its `rules` array a defined number of times. A conditional plugin executes its `rules` only when its condition is met.
@@ -273,15 +281,28 @@ Nesting is unlimited. The hierarchy is visible in the response via the `parentRe
 
 ## Variable Interpolation
 
-Workflow values support `{{$parameterName}}` template syntax. The engine resolves each token at step execution time against the current data context.
+Workflow values support template syntax. The engine resolves each token at rule execution time against the current data context.
 
-Sources for variable values:
+Parameters are accessed using the `Get-Parameter` plugin inline syntax:
+
+```
+{{$Get-Parameter --Name:<parameterName> --Scope:<scope>}}
+```
+
+Common scopes:
+
+| Scope | Description |
+|---|---|
+| `Application` | Parameters from `environmentsSettings.environmentVariables` — shared across the automation |
+| `Session` | Parameters stored during the current session via `RegisterParameter` or `dataCollector` |
+
+Sources for parameter values:
 
 | Source | How it's set |
 |---|---|
-| Prior rule output | A `dataCollector` on an earlier rule stores the extracted value under a key |
+| Prior rule output | A `dataCollector` on an earlier rule stores the extracted value under a named key |
 | `RegisterParameter` plugin | Explicitly registers a value (literal, extracted, or transformed) into the context |
-| Environment variables | Defined in `settings.environmentsSettings.environmentVariables` |
+| Environment variables | Defined in `settings.environmentsSettings.environmentVariables` under a named environment |
 | Engine built-ins | Runtime values such as current URL, page title, timestamps |
 | External input | Parameters passed in with the workflow submission |
 
