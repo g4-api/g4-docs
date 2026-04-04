@@ -212,10 +212,11 @@ A plugin is any implementation that abides by the G4 protocol. The engine dispat
 |---|---|
 | Built-in G4 actions | Native implementations shipped with the engine — browser control, flow control, data operations, system utilities |
 | G4 SDK plugins | .NET implementations using the [G4 API Client SDK](https://github.com/g4-api/g4-api-client). Referenced by the g4.hub or placed under the plugins directory. Covered in full in the G4 Plugins reference. |
+| Templates | Flows registered as plugins. A template wraps any number of rules into a single named tool that exposes its own parameters and properties. See [Templates](#templates). |
 | MCP tools | MCP servers configured via `pluginsSettings.servers`. Connected tools are resolved into the catalog and invocable as first-class rules. |
 | External RPC repositories | Code-agnostic plugin sources served over HTTP using the G4 protocol. Any language, any runtime. Registered via `pluginsSettings.externalRepositories`. |
 
-All types are resolved and dispatched identically. The workflow does not know or care whether a plugin is built-in, SDK-based, MCP-connected, or served remotely over HTTP.
+All types are resolved and dispatched identically. The workflow does not know or care whether a plugin is built-in, SDK-based, a template, MCP-connected, or served remotely over HTTP.
 
 ### Discovering Available Plugins
 
@@ -272,6 +273,16 @@ Once registered, all plugins exposed by the repository are resolved into the too
 MCP server connections are configured via `settings.pluginsSettings.servers` using the standard MCP settings object. Tools exposed by connected MCP servers are resolved into the tools catalog and become first-class plugins — invocable as rules in any workflow, indistinguishable from built-in or SDK-based plugins.
 
 See [G4 MCP](../products/g4-mcp.md) for the full dispatcher architecture and MCP integration reference.
+
+### Templates
+
+A template is a flow registered as a plugin. It takes any number of rules — a complete automation sequence that could span dozens of steps — and exposes it as a single named tool in the catalog with its own parameters and properties.
+
+Once registered, a template is indistinguishable from any other plugin. It appears in the manifest, is referenced by its `key` in workflow rules, receives arguments, and returns results the same way any other plugin does. The complexity it encapsulates is invisible to the caller.
+
+Templates can be used inside other templates, enabling layered abstraction — a template that calls other templates, each hiding its own complexity behind a clean interface.
+
+To prevent fragility, abuse, and recursive execution, template nesting is **hard-limited to a depth of 10**. If a template directly or indirectly calls itself, execution stops at depth 10 and the flow continues — the recursion does not crash or hang the automation.
 
 ### Nested Plugins
 
