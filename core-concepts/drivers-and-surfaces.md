@@ -28,10 +28,10 @@ Drivers are configured per automation via the `driverParameters` object. The two
 
 ```json
 {
-  "driverParameters": {
-    "driver": "DriverName",
-    "driverBinaries": "/path/to/driver  or  http://remote-host:4444"
-  }
+	"driverParameters": {
+		"driver": "DriverName",
+		"driverBinaries": "/path/to/driver  or  http://remote-host:4444"
+	}
 }
 ```
 
@@ -43,18 +43,18 @@ G4 passes capabilities to the driver using the standard **WebDriver W3C new sess
 
 ```json
 {
-  "driverParameters": {
-    "driver": "DriverName",
-    "driverBinaries": "/path/to/driver",
-    "capabilities": {
-      "alwaysMatch": {
-        "browserName": "chrome"
-      },
-      "firstMatch": [
-        {}
-      ]
-    }
-  }
+	"driverParameters": {
+		"driver": "DriverName",
+		"driverBinaries": "/path/to/driver",
+		"capabilities": {
+			"alwaysMatch": {
+				"browserName": "chrome"
+			},
+			"firstMatch": [
+				{}
+			]
+		}
+	}
 }
 ```
 
@@ -62,21 +62,21 @@ Driver-specific options go under their designated vendor extension key, followin
 
 ```json
 {
-  "driverParameters": {
-    "driver": "DriverName",
-    "driverBinaries": "/path/to/driver",
-    "capabilities": {
-      "alwaysMatch": {
-        "browserName": "chrome",
-        "goog:chromeOptions": {
-          "args": ["--headless", "--disable-gpu", "--no-sandbox"]
-        }
-      },
-      "firstMatch": [
-        {}
-      ]
-    }
-  }
+	"driverParameters": {
+		"driver": "DriverName",
+		"driverBinaries": "/path/to/driver",
+		"capabilities": {
+			"alwaysMatch": {
+				"browserName": "chrome",
+				"goog:chromeOptions": {
+					"args": ["--headless", "--disable-gpu", "--no-sandbox"]
+				}
+			},
+			"firstMatch": [
+				{}
+			]
+		}
+	}
 }
 ```
 
@@ -96,28 +96,24 @@ The response returns an array of driver manifest entries. Each entry describes o
 
 ```json
 [
-  {
-    "key": "ChromeDriver",
-    "name": "Chrome Driver",
-    "description": "...",
-    ...
-  },
-  {
-    "key": "AppiumDriver",
-    "name": "Appium Driver",
-    "description": "...",
-    ...
-  }
+	{
+		"key": "ChromeDriver",
+		...
+	},
+	{
+		"key": "AndroidDriver",
+		...
+	}
 ]
 ```
 
-Use the `key` value — not the `name` — in your configuration:
+Use the `key` value in your configuration:
 
 ```json
 {
-  "driverParameters": {
-    "driver": "ChromeDriver"
-  }
+	"driverParameters": {
+		"driver": "ChromeDriver"
+	}
 }
 ```
 
