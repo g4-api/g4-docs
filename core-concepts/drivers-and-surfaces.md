@@ -41,7 +41,7 @@ For remote drivers (those that run as a separate service):
 }
 ```
 
-The value of `driver` is the name registered by the driver implementation. Which drivers are available depends on what is installed in your environment — G4 does not ship with a fixed driver set.
+The value of `driver` must match the `key` field of the driver entry returned by the server manifest (see [Discovering Available Drivers](#discovering-available-drivers) below). Which drivers are available depends on what is installed in your environment — G4 does not ship with a fixed driver set.
 
 ### Capabilities
 
@@ -61,6 +61,47 @@ The `capabilities` object passes driver-specific options at session creation tim
 ```
 
 Capabilities are passed directly to the driver during session initialization. Refer to the documentation of the specific driver for supported capability keys.
+
+---
+
+## Discovering Available Drivers
+
+To see which drivers are registered on a running G4 server, call the driver manifest endpoint:
+
+```
+GET <serverUrl>/api/v4/g4/integration/manifests/drivers
+```
+
+The response returns an array of driver manifest entries. Each entry describes one registered driver. The `key` field is the value you use in `driverParameters.driver`:
+
+```json
+[
+  {
+    "key": "ChromeDriver",
+    "name": "Chrome Driver",
+    "description": "...",
+    ...
+  },
+  {
+    "key": "AppiumDriver",
+    "name": "Appium Driver",
+    "description": "...",
+    ...
+  }
+]
+```
+
+Use the `key` value — not the `name` — in your configuration:
+
+```json
+{
+  "driverParameters": {
+    "driver": "ChromeDriver"
+  }
+}
+```
+
+This endpoint reflects the actual state of the server at the time of the call. If a new driver is installed and the server restarted, it will appear here automatically.
 
 ---
 
