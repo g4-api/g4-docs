@@ -76,7 +76,7 @@ The `settings` object controls engine behavior for the run:
 		},
 		"pluginsSettings": {
 			"externalRepositories": [ ... ],
-			"servers": [ ... ],
+			"servers": { ... },
 			"forceRuleReference": true
 		},
 		"screenshotsSettings": {
@@ -136,7 +136,7 @@ Each stage is an object with the following key fields:
 | `name` | Stage name — appears in the response reference chain. |
 | `condition` | Expression evaluated before the stage executes. Stage is skipped if false. |
 | `driverParameters` | Stage-level driver override — opens an isolated session for this stage. |
-| `driverSession` | Attach to a specific existing session instead of using the inherited one. |
+| `driverSession` | Auto-populated and managed by the engine. Not set by the user. |
 | `failOnException` | Stop this stage on first exception instead of the default silent-and-continue behavior. |
 | `ignoredExceptions` | Exception types to suppress — not recorded, not counted, and will not trigger `failOnException` even when it is set. |
 | `dependencies` | IDs of stages (from their `reference` field) that must complete before this stage begins. |
@@ -163,6 +163,8 @@ Each job within a stage:
 |---|---|
 | `condition` | Expression evaluated before the job executes. Job is skipped if false. |
 | `driverParameters` | Job-level driver override — isolated session for this job. |
+| `driverSession` | Auto-populated and managed by the engine. Not set by the user. |
+| `automationSession` | Auto-populated and managed by the engine. Not set by the user. |
 | `stopOnError` | Stop this job on first rule failure. Default engine behavior is silent-and-continue. |
 | `rules` | The ordered list of plugin invocations (steps) in this job. |
 
