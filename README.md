@@ -14,6 +14,7 @@
 ## Core Concepts
 
 - [Architecture](core-concepts/architecture.md)
+- [G4 as an Execution Layer](core-concepts/g4-as-execution-layer.md)
 - [Execution Model](core-concepts/execution-model.md)
 - [Drivers & Surfaces](core-concepts/drivers-and-surfaces.md)
 - [Workflows & Plugins](core-concepts/workflows-and-plugins.md)
