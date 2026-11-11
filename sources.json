@@ -1,0 +1,652 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "repository": "g4-api/g4-vscode-extension",
+      "slug": "g4-vscode-extension",
+      "title": "G4 Studio",
+      "area": "Studio",
+      "ref": "main",
+      "mode": "import",
+      "paths": [
+        "README.md",
+        "resources.docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Import enabled"
+    },
+    {
+      "repository": "g4-api/g4-test-wright-vscode-extension",
+      "slug": "g4-test-wright-vscode-extension",
+      "title": "Test Wright for VS Code",
+      "area": "Testing",
+      "ref": "main",
+      "mode": "import",
+      "paths": [
+        "README.md",
+        "resources.docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Import enabled"
+    },
+    {
+      "repository": "g4-api/g4-test-wright",
+      "slug": "g4-test-wright",
+      "title": "Test Wright desktop",
+      "area": "Testing",
+      "ref": "main",
+      "mode": "import",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Import enabled"
+    },
+    {
+      "repository": "g4-api/g4-services",
+      "slug": "g4-services",
+      "title": "G4 Hub",
+      "area": "Hub",
+      "ref": "main",
+      "mode": "import",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Import enabled"
+    },
+    {
+      "repository": "g4-api/g4-plugins",
+      "slug": "g4-plugins",
+      "title": "Plugin catalog",
+      "area": "Plugins",
+      "ref": "main",
+      "mode": "import",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Import enabled"
+    },
+    {
+      "repository": "g4-api/g4-recorders",
+      "slug": "g4-recorders",
+      "title": "G4 Recorders",
+      "area": "Recorders",
+      "ref": "main",
+      "mode": "import",
+      "paths": [
+        "README.md",
+        "docs",
+        "src/G4.Recorders.Chromium.Extension/README.md"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Import enabled"
+    },
+    {
+      "repository": "g4-api/uia-driver-server",
+      "slug": "uia-driver-server",
+      "title": "uia-driver-server",
+      "area": "Drivers and SDKs",
+      "ref": "main",
+      "mode": "import",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Import enabled"
+    },
+    {
+      "repository": "g4-api/sap-driver-server",
+      "slug": "sap-driver-server",
+      "title": "sap-driver-server",
+      "area": "Drivers and SDKs",
+      "ref": "main",
+      "mode": "import",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Import enabled"
+    },
+    {
+      "repository": "g4-api/g4-web-driver-client",
+      "slug": "g4-web-driver-client",
+      "title": "g4-web-driver-client",
+      "area": "Drivers and SDKs",
+      "ref": "main",
+      "mode": "import",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Import enabled"
+    },
+    {
+      "repository": "g4-api/g4-api-client",
+      "slug": "g4-api-client",
+      "title": "g4-api-client",
+      "area": "Drivers and SDKs",
+      "ref": "main",
+      "mode": "import",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Import enabled"
+    },
+    {
+      "repository": "g4-api/g4-abstraction",
+      "slug": "g4-abstraction",
+      "title": "g4-abstraction",
+      "area": "Drivers and SDKs",
+      "ref": "main",
+      "mode": "import",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Import enabled"
+    },
+    {
+      "repository": "g4-api/g4-sandbox",
+      "slug": "g4-sandbox",
+      "title": "g4-sandbox",
+      "area": "Deploy and operate",
+      "ref": "main",
+      "mode": "import",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Import enabled"
+    },
+    {
+      "repository": "g4-api/g4-bot-monitor",
+      "slug": "g4-bot-monitor",
+      "title": "g4-bot-monitor",
+      "area": "Deploy and operate",
+      "ref": "main",
+      "mode": "import",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Import enabled"
+    },
+    {
+      "repository": "g4-api/g4-grid",
+      "slug": "g4-grid",
+      "title": "g4-grid",
+      "area": "Deploy and operate",
+      "ref": "main",
+      "mode": "import",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Import enabled"
+    },
+    {
+      "repository": "g4-api/g4-xray-mcp",
+      "slug": "g4-xray-mcp",
+      "title": "g4-xray-mcp",
+      "area": "Integrations",
+      "ref": "main",
+      "mode": "import",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Import enabled"
+    },
+    {
+      "repository": "g4-api/g4-base-mcp",
+      "slug": "g4-base-mcp",
+      "title": "g4-base-mcp",
+      "area": "Integrations",
+      "ref": "main",
+      "mode": "import",
+      "paths": [
+        "README.md",
+        "docs",
+        "src/python/README.md"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Import enabled"
+    },
+    {
+      "repository": "g4-api/g4-external-python",
+      "slug": "g4-external-python",
+      "title": "g4-external-python",
+      "area": "Integrations",
+      "ref": "main",
+      "mode": "import",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Import enabled"
+    },
+    {
+      "repository": "g4-api/g4-webui-pipelines",
+      "slug": "g4-webui-pipelines",
+      "title": "g4-webui-pipelines",
+      "area": "Integrations",
+      "ref": "main",
+      "mode": "import",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Import enabled"
+    },
+    {
+      "repository": "g4-api/command-bridge",
+      "slug": "command-bridge",
+      "title": "command-bridge",
+      "area": "Tools",
+      "ref": "main",
+      "mode": "import",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Import enabled"
+    },
+    {
+      "repository": "g4-api/ocr-inspector",
+      "slug": "ocr-inspector",
+      "title": "ocr-inspector",
+      "area": "Tools",
+      "ref": "main",
+      "mode": "import",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Import enabled"
+    },
+    {
+      "repository": "g4-api/cursor-coordinate-tracker",
+      "slug": "cursor-coordinate-tracker",
+      "title": "cursor-coordinate-tracker",
+      "area": "Tools",
+      "ref": "main",
+      "mode": "import",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Import enabled"
+    },
+    {
+      "repository": "g4-api/simple-encryptor-decryptor",
+      "slug": "simple-encryptor-decryptor",
+      "title": "simple-encryptor-decryptor",
+      "area": "Tools",
+      "ref": "main",
+      "mode": "import",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Import enabled"
+    },
+    {
+      "repository": "g4-api/git-submodules-manager",
+      "slug": "git-submodules-manager",
+      "title": "git-submodules-manager",
+      "area": "Tools",
+      "ref": "main",
+      "mode": "import",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Import enabled"
+    },
+    {
+      "repository": "g4-api/tfvc-dependencies-manager",
+      "slug": "tfvc-dependencies-manager",
+      "title": "tfvc-dependencies-manager",
+      "area": "Tools",
+      "ref": "main",
+      "mode": "import",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Import enabled"
+    },
+    {
+      "repository": "g4-api/qa-tools-demo",
+      "slug": "qa-tools-demo",
+      "title": "qa-tools-demo",
+      "area": "Examples",
+      "ref": "main",
+      "mode": "import",
+      "paths": [
+        "README.md"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Import enabled"
+    },
+    {
+      "repository": "g4-api/demo-application",
+      "slug": "demo-application",
+      "title": "demo-application",
+      "area": "Examples",
+      "ref": "main",
+      "mode": "import",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Import enabled"
+    },
+    {
+      "repository": "g4-api/mtm-chromium-extension",
+      "slug": "mtm-chromium-extension",
+      "title": "mtm-chromium-extension",
+      "area": "Examples",
+      "ref": "main",
+      "mode": "import",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Import enabled"
+    },
+    {
+      "repository": "g4-api/terminal",
+      "slug": "terminal",
+      "title": "terminal",
+      "area": "Upstream components",
+      "ref": "main",
+      "mode": "link",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Upstream documentation linked"
+    },
+    {
+      "repository": "g4-api/open-webui",
+      "slug": "open-webui",
+      "title": "open-webui",
+      "area": "Upstream components",
+      "ref": "main",
+      "mode": "link",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Upstream documentation linked"
+    },
+    {
+      "repository": "g4-api/sequential-workflow-editor",
+      "slug": "sequential-workflow-editor",
+      "title": "sequential-workflow-editor",
+      "area": "Upstream components",
+      "ref": "main",
+      "mode": "link",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Upstream documentation linked"
+    },
+    {
+      "repository": "g4-api/sequential-workflow-designer",
+      "slug": "sequential-workflow-designer",
+      "title": "sequential-workflow-designer",
+      "area": "Upstream components",
+      "ref": "main",
+      "mode": "link",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Upstream documentation linked"
+    },
+    {
+      "repository": "g4-api/uia-peek",
+      "slug": "uia-peek",
+      "title": "uia-peek",
+      "area": "Retired or incomplete",
+      "ref": "main",
+      "mode": "link",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Retired"
+    },
+    {
+      "repository": "g4-api/swing-driver-server",
+      "slug": "swing-driver-server",
+      "title": "swing-driver-server",
+      "area": "Retired or incomplete",
+      "ref": "main",
+      "mode": "link",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "No documentation yet"
+    },
+    {
+      "repository": "g4-api/g4-engine",
+      "slug": "g4-engine",
+      "title": "g4-engine",
+      "area": "Additional local sources",
+      "ref": "main",
+      "mode": "link",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Linked only; public import not enabled"
+    },
+    {
+      "repository": "g4-api/g4-ai-assets",
+      "slug": "g4-ai-assets",
+      "title": "g4-ai-assets",
+      "area": "Additional local sources",
+      "ref": "main",
+      "mode": "link",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Linked only; public import not enabled"
+    },
+    {
+      "repository": "g4-api/g4-skills",
+      "slug": "g4-skills",
+      "title": "g4-skills",
+      "area": "Additional local sources",
+      "ref": "main",
+      "mode": "link",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Linked only; public import not enabled"
+    },
+    {
+      "repository": "g4-api/g4-pytest-wrapper",
+      "slug": "g4-pytest-wrapper",
+      "title": "g4-pytest-wrapper",
+      "area": "Additional local sources",
+      "ref": "main",
+      "mode": "link",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Linked only; public import not enabled"
+    },
+    {
+      "repository": "g4-api/g4-ronin",
+      "slug": "g4-ronin",
+      "title": "g4-ronin",
+      "area": "Additional local sources",
+      "ref": "main",
+      "mode": "link",
+      "paths": [
+        "README.md",
+        "docs"
+      ],
+      "exclude": [
+        "docs/visual-test-plan.md",
+        "docs/visual-test-results.md"
+      ],
+      "status": "Linked only; public import not enabled"
+    }
+  ]
+}

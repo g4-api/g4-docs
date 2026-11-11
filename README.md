@@ -1,42 +1,29 @@
-# G4 Documentation
+# G4 documentation hub
 
-> Full documentation for the G4 automation platform — engine, MCP dispatcher, plugins, and recorder.
+This repository collects G4 product documentation and publishes a searchable static website.
 
----
+- [Choose a starting point](content/get-started.md).
+- [Browse the repository index](content/repositories.md).
+- [Maintain and publish the hub](content/maintaining.md).
 
-## Getting Started
+## Local development
 
-- [Introduction](getting-started/introduction.md)
-- [Installation](getting-started/installation.md)
-- [Quick Start](getting-started/quick-start.md)
-- [First Workflow](getting-started/first-workflow.md)
+1. Install Node.js 22 or newer.
+2. Run `npm ci`.
+3. Run `npm run docs:dev`.
 
-## Core Concepts
+## Update and verify
 
-- [Architecture](core-concepts/architecture.md)
-- [G4 as an Execution Layer](core-concepts/g4-as-execution-layer.md)
-- [Execution Model](core-concepts/execution-model.md)
-- [Drivers & Surfaces](core-concepts/drivers-and-surfaces.md)
-- [Workflows & Plugins](core-concepts/workflows-and-plugins.md)
-- [ETL & Data Pipelines](core-concepts/etl-and-data-pipelines.md)
+1. Run `npm run docs:sync` to import approved sources.
+2. Review `sources.lock.json` and the changes in `content/products/`.
+3. Run `npm test`.
+4. Run `npm run docs:build`.
 
-## Products
+The import allowlist lives in `sources.json`. Product pages remain owned by their source repositories.
+Shared guides live directly in `content/`.
+Legacy folders are retained outside the website source tree and are not indexed or published.
 
-- [G4 Engine](products/g4-engine.md)
-- [G4 MCP](products/g4-mcp.md)
-- [G4 Plugins](products/g4-plugins.md)
-- [G4 Recorder](products/g4-recorder.md)
+## Ownership and licensing
 
-## Platform
-
-- [API & SDKs](platform/api-and-sdks.md)
-- [Examples](platform/examples.md)
-
-## Responsible Use
-
-- [Usage Policy](responsible-use/usage-policy.md)
-
-## Resources
-
-- [FAQ](resources/faq.md)
-- [Changelog](resources/changelog.md)
+Imported documents and assets retain their source ownership and applicable licenses.
+Consult each source repository through the repository index before redistributing its material.

@@ -1,0 +1,7 @@
+node_modules/
+.cache/
+content/.vitepress/cache/
+content/.vitepress/dist/
+content/.vitepress/.temp/
+.sync-staging/
+

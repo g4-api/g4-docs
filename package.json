@@ -1,0 +1,24 @@
+{
+  "name": "g4-documentation-hub",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "docs:sync": "node scripts/sync.mjs",
+    "docs:check": "node scripts/check.mjs",
+    "docs:dev": "vitepress dev content",
+    "docs:build": "npm run docs:check && vitepress build content && node scripts/check-output.mjs",
+    "docs:preview": "vitepress preview content",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "devDependencies": {
+    "github-slugger": "^2.0.0",
+    "markdown-it": "^14.3.3",
+    "vitepress": "^1.6.4"
+  },
+  "overrides": {
+    "vite": "^6.4.6"
+  }
+}
