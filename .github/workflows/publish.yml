@@ -46,13 +46,13 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      # The enablement input is required because the repository has no Pages site yet. Without it the action
-      # only reads the existing site and fails with "Get Pages site failed ... Not Found"; with it, the action
-      # creates the site on the first run and configures it to build from this workflow.
+      # The Pages site is created once out of band (POST /repos/:owner/:repo/pages with build_type=workflow,
+      # or Settings > Pages > Source: GitHub Actions). The enablement input is deliberately left at its default
+      # because creating a site needs repository administration rights, which GITHUB_TOKEN cannot be granted:
+      # with enablement enabled the step fails with "Create Pages site failed ... Resource not accessible by
+      # integration". This step only reads the existing site configuration.
       - name: Configure Pages
         uses: actions/configure-pages@v5
-        with:
-          enablement: true
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
