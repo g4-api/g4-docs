@@ -46,8 +46,13 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      # The enablement input is required because the repository has no Pages site yet. Without it the action
+      # only reads the existing site and fails with "Get Pages site failed ... Not Found"; with it, the action
+      # creates the site on the first run and configures it to build from this workflow.
       - name: Configure Pages
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4

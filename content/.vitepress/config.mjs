@@ -5,6 +5,7 @@ import { slug } from 'github-slugger';
 import { defineConfig } from 'vitepress';
 
 import { resolveLink } from '../../scripts/links.mjs';
+import { getNavigation, getPageTitle } from '../../scripts/navigation.mjs';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const lock = JSON.parse(readFileSync(`${root}/sources.lock.json`, 'utf8'));
@@ -109,10 +110,7 @@ export default defineConfig({
             ...groups.map(area => ({ text: area, collapsed: true,
                 items: lock.sources.filter(source => source.area === area).map(source => ({
                     text: source.title, collapsed: true,
-                    items: source.documents.map(path => ({
-                        text: path === 'README.md' ? 'Overview' : path.replace(/\.md$/, ''),
-                        link: `/products/${source.slug}/${path.replace(/\.md$/, '')}`
-                    }))
+                    items: getNavigation(source, `${root}/content`)
                 }))
             }))
         ],
@@ -132,6 +130,7 @@ export default defineConfig({
 
         if (source) {
             const path = page.relativePath.slice(`products/${source.slug}/`.length);
+            page.title = getPageTitle(readFileSync(`${root}/content/${page.relativePath}`, 'utf8'), path);
             page.frontmatter.sourceEditUrl = `${source.url}/edit/${source.ref}/${path}`;
         }
     }

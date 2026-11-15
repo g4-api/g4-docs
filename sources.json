@@ -107,7 +107,7 @@
     {
       "repository": "g4-api/uia-driver-server",
       "slug": "uia-driver-server",
-      "title": "uia-driver-server",
+      "title": "UIA Driver Server",
       "area": "Drivers and SDKs",
       "ref": "main",
       "mode": "import",
@@ -124,7 +124,7 @@
     {
       "repository": "g4-api/sap-driver-server",
       "slug": "sap-driver-server",
-      "title": "sap-driver-server",
+      "title": "SAP Driver Server",
       "area": "Drivers and SDKs",
       "ref": "main",
       "mode": "import",
@@ -141,7 +141,7 @@
     {
       "repository": "g4-api/g4-web-driver-client",
       "slug": "g4-web-driver-client",
-      "title": "g4-web-driver-client",
+      "title": "G4 WebDriver client",
       "area": "Drivers and SDKs",
       "ref": "main",
       "mode": "import",
@@ -158,7 +158,7 @@
     {
       "repository": "g4-api/g4-api-client",
       "slug": "g4-api-client",
-      "title": "g4-api-client",
+      "title": "G4 API client",
       "area": "Drivers and SDKs",
       "ref": "main",
       "mode": "import",
@@ -175,7 +175,7 @@
     {
       "repository": "g4-api/g4-abstraction",
       "slug": "g4-abstraction",
-      "title": "g4-abstraction",
+      "title": "G4 Abstraction",
       "area": "Drivers and SDKs",
       "ref": "main",
       "mode": "import",
@@ -192,7 +192,7 @@
     {
       "repository": "g4-api/g4-sandbox",
       "slug": "g4-sandbox",
-      "title": "g4-sandbox",
+      "title": "G4 Sandbox",
       "area": "Deploy and operate",
       "ref": "main",
       "mode": "import",
@@ -209,7 +209,7 @@
     {
       "repository": "g4-api/g4-bot-monitor",
       "slug": "g4-bot-monitor",
-      "title": "g4-bot-monitor",
+      "title": "G4 Bot Monitor",
       "area": "Deploy and operate",
       "ref": "main",
       "mode": "import",
@@ -226,7 +226,7 @@
     {
       "repository": "g4-api/g4-grid",
       "slug": "g4-grid",
-      "title": "g4-grid",
+      "title": "G4 Grid",
       "area": "Deploy and operate",
       "ref": "main",
       "mode": "import",
@@ -243,7 +243,7 @@
     {
       "repository": "g4-api/g4-xray-mcp",
       "slug": "g4-xray-mcp",
-      "title": "g4-xray-mcp",
+      "title": "G4 Jira and Xray MCP",
       "area": "Integrations",
       "ref": "main",
       "mode": "import",
@@ -260,7 +260,7 @@
     {
       "repository": "g4-api/g4-base-mcp",
       "slug": "g4-base-mcp",
-      "title": "g4-base-mcp",
+      "title": "G4 MCP implementations",
       "area": "Integrations",
       "ref": "main",
       "mode": "import",
@@ -278,7 +278,7 @@
     {
       "repository": "g4-api/g4-external-python",
       "slug": "g4-external-python",
-      "title": "g4-external-python",
+      "title": "G4 Python plugins",
       "area": "Integrations",
       "ref": "main",
       "mode": "import",
@@ -295,7 +295,7 @@
     {
       "repository": "g4-api/g4-webui-pipelines",
       "slug": "g4-webui-pipelines",
-      "title": "g4-webui-pipelines",
+      "title": "G4 Open WebUI pipelines",
       "area": "Integrations",
       "ref": "main",
       "mode": "import",
@@ -312,7 +312,7 @@
     {
       "repository": "g4-api/command-bridge",
       "slug": "command-bridge",
-      "title": "command-bridge",
+      "title": "CommandBridge",
       "area": "Tools",
       "ref": "main",
       "mode": "import",
@@ -329,7 +329,7 @@
     {
       "repository": "g4-api/ocr-inspector",
       "slug": "ocr-inspector",
-      "title": "ocr-inspector",
+      "title": "OCR Inspector",
       "area": "Tools",
       "ref": "main",
       "mode": "import",
@@ -346,7 +346,7 @@
     {
       "repository": "g4-api/cursor-coordinate-tracker",
       "slug": "cursor-coordinate-tracker",
-      "title": "cursor-coordinate-tracker",
+      "title": "Cursor Coordinate Tracker",
       "area": "Tools",
       "ref": "main",
       "mode": "import",
@@ -363,7 +363,7 @@
     {
       "repository": "g4-api/simple-encryptor-decryptor",
       "slug": "simple-encryptor-decryptor",
-      "title": "simple-encryptor-decryptor",
+      "title": "Encryptor Decryptor",
       "area": "Tools",
       "ref": "main",
       "mode": "import",
@@ -380,7 +380,7 @@
     {
       "repository": "g4-api/git-submodules-manager",
       "slug": "git-submodules-manager",
-      "title": "git-submodules-manager",
+      "title": "Git Submodules Manager",
       "area": "Tools",
       "ref": "main",
       "mode": "import",
@@ -397,7 +397,7 @@
     {
       "repository": "g4-api/tfvc-dependencies-manager",
       "slug": "tfvc-dependencies-manager",
-      "title": "tfvc-dependencies-manager",
+      "title": "TFVC Dependencies Manager",
       "area": "Tools",
       "ref": "main",
       "mode": "import",
@@ -414,7 +414,7 @@
     {
       "repository": "g4-api/qa-tools-demo",
       "slug": "qa-tools-demo",
-      "title": "qa-tools-demo",
+      "title": "QA tools demo",
       "area": "Examples",
       "ref": "main",
       "mode": "import",
@@ -430,7 +430,7 @@
     {
       "repository": "g4-api/demo-application",
       "slug": "demo-application",
-      "title": "demo-application",
+      "title": "Demo application",
       "area": "Examples",
       "ref": "main",
       "mode": "import",
@@ -447,7 +447,7 @@
     {
       "repository": "g4-api/mtm-chromium-extension",
       "slug": "mtm-chromium-extension",
-      "title": "mtm-chromium-extension",
+      "title": "MTM Chromium extension",
       "area": "Examples",
       "ref": "main",
       "mode": "import",
@@ -464,7 +464,7 @@
     {
       "repository": "g4-api/terminal",
       "slug": "terminal",
-      "title": "terminal",
+      "title": "Windows Terminal",
       "area": "Upstream components",
       "ref": "main",
       "mode": "link",
@@ -481,7 +481,7 @@
     {
       "repository": "g4-api/open-webui",
       "slug": "open-webui",
-      "title": "open-webui",
+      "title": "Open WebUI",
       "area": "Upstream components",
       "ref": "main",
       "mode": "link",
@@ -498,7 +498,7 @@
     {
       "repository": "g4-api/sequential-workflow-editor",
       "slug": "sequential-workflow-editor",
-      "title": "sequential-workflow-editor",
+      "title": "Sequential Workflow Editor",
       "area": "Upstream components",
       "ref": "main",
       "mode": "link",
@@ -515,7 +515,7 @@
     {
       "repository": "g4-api/sequential-workflow-designer",
       "slug": "sequential-workflow-designer",
-      "title": "sequential-workflow-designer",
+      "title": "Sequential Workflow Designer",
       "area": "Upstream components",
       "ref": "main",
       "mode": "link",
@@ -532,7 +532,7 @@
     {
       "repository": "g4-api/uia-peek",
       "slug": "uia-peek",
-      "title": "uia-peek",
+      "title": "UIA Peek",
       "area": "Retired or incomplete",
       "ref": "main",
       "mode": "link",
@@ -549,7 +549,7 @@
     {
       "repository": "g4-api/swing-driver-server",
       "slug": "swing-driver-server",
-      "title": "swing-driver-server",
+      "title": "Swing Driver Server",
       "area": "Retired or incomplete",
       "ref": "main",
       "mode": "link",
@@ -566,7 +566,7 @@
     {
       "repository": "g4-api/g4-engine",
       "slug": "g4-engine",
-      "title": "g4-engine",
+      "title": "G4 Engine",
       "area": "Additional local sources",
       "ref": "main",
       "mode": "link",
@@ -583,7 +583,7 @@
     {
       "repository": "g4-api/g4-ai-assets",
       "slug": "g4-ai-assets",
-      "title": "g4-ai-assets",
+      "title": "G4 AI assets",
       "area": "Additional local sources",
       "ref": "main",
       "mode": "link",
@@ -600,7 +600,7 @@
     {
       "repository": "g4-api/g4-skills",
       "slug": "g4-skills",
-      "title": "g4-skills",
+      "title": "G4 Skills",
       "area": "Additional local sources",
       "ref": "main",
       "mode": "link",
@@ -617,7 +617,7 @@
     {
       "repository": "g4-api/g4-pytest-wrapper",
       "slug": "g4-pytest-wrapper",
-      "title": "g4-pytest-wrapper",
+      "title": "G4 pytest wrapper",
       "area": "Additional local sources",
       "ref": "main",
       "mode": "link",
@@ -634,7 +634,7 @@
     {
       "repository": "g4-api/g4-ronin",
       "slug": "g4-ronin",
-      "title": "g4-ronin",
+      "title": "G4 Ronin",
       "area": "Additional local sources",
       "ref": "main",
       "mode": "link",
