@@ -33,8 +33,8 @@ Jump to a group:
 | --- | --- | --- | --- |
 | Typing in the text does not change the canvas | The text is not valid JSON, so the canvas keeps what it last drew | Fix the JSON. Do not edit on the canvas while the text is invalid, because that replaces the whole text | `src/providers/g4-workflow-custom-editor-provider.ts:101` (newDocumentText), `src/commands/show-workflow.ts:882` |
 | A tool you hid with `toolboxesFilter` is still in the toolbox | The entry lacks a non-empty `name` or a true-or-false `enabled`, so it is ignored. Or a more specific tool entry shows it | Check the entry. Remember the order: qualified tool name, bare key, toolbox, then shown | `src/commands/show-workflow.ts:265`, `../g4-services/src/G4.Services.Hub/wwwroot/js/toolboxes-filter.js:268-287` |
-| A tool is hidden and you did not hide it | Your filter in the browser cookie or the manifest hides its toolbox | Open the filter panel and check the toolbox. A locked switch with **Set by the project manifest** comes from `manifest.json` | `src/commands/show-workflow.ts:1609` |
-| The filter panel says `The filter is too large to save in the browser; turn fewer tools on or off.` | The cookie that keeps the filter would pass 4000 characters | Turn fewer entries off, or put the filter in `manifest.json` | `../g4-services/src/G4.Services.Hub/wwwroot/components/g4-toolboxes-filter/g4-toolboxes-filter.js:31` |
+| A tool is hidden and you did not hide it | Your own filter (saved with the project in VS Code, or in a cookie in the browser) or the manifest hides its toolbox | Open the filter panel and check the toolbox. A locked switch with **Set by the project manifest** comes from `manifest.json` | `src/commands/show-workflow.ts:1771` |
+| The filter panel says `The filter is too large to save in the browser; turn fewer tools on or off.` | In the browser, the cookie that keeps the filter would pass 4000 characters. VS Code has no such limit | Turn fewer entries off, or put the filter in `manifest.json` | `../g4-services/src/G4.Services.Hub/wwwroot/components/g4-toolboxes-filter/g4-toolboxes-filter.js:31` |
 | Changes to `toolboxesFilter` do not appear | The save did not reach the open tab. The log may hold `The designer could not apply the manifest toolboxes filter: <reason>` | Read the reason in the **G4 Extension** channel, fix `manifest.json`, and save it again | `src/commands/show-workflow.ts:1633` |
 
 ---
@@ -64,6 +64,8 @@ Jump to a group:
 | Fewer log entries than expected | `logLevel` is `warning` or `error`, or a source filter hides the logger | Set the **Detail Level** to `information` or `debug`. Check **Source Filter Mode** and **Sources** | `src/logging/logger-base.ts:1030-1085` |
 | Log level changed but the output did not | Loggers read the settings when they are created, and most are created at start | Run **Developer: Reload Window** | `src/commands/command-base.ts:43` |
 | The Settings Editor logging fields do not change the output log | The Settings Editor writes `clientLogConfiguration`, but the extension reads `clientLogSettings` | Put the section under `clientLogSettings` in `manifest.json` | `src/extensions/utilities.ts:397-401` |
+| **G4: Show Event JSON** says there are no events, or the event you want is not in the list | Only the last 50 events are kept, in memory, and nothing survives a restart of VS Code | Run the bot again, then run the command while the event is among the last 50 | `src/services/g4-event-log-service.ts:33` |
+| A Hub event in the log shows `{…9 keys}` or `… truncated` instead of its JSON | The log shortens large events, because the Output panel cannot fold | Run **G4: Show Event JSON** to add the part in full, or set **G4: Event Log Detail** to `full` | `src/services/g4-event-log-service.ts:480` |
 
 ---
 

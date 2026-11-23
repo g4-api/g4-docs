@@ -21,8 +21,8 @@ Open the folder of a run that collected Allure results. Next to the run folder y
 
 ```text
 reports/
-    2026-11-08-101500/              run.json and one .g4rpt per bot
-    allure-2026-11-08-101500/
+    20261108-101500/              run.json and one .g4rpt per bot
+    20261108-101500-allure/
         results/                    the files written by the conversion
 ```
 
@@ -34,7 +34,7 @@ Inside `results` you find:
 
 | File | What it holds |
 | --- | --- |
-| `<id>-result.json` | One Allure test per execution: a bot at one plan position in one iteration. |
+| `<id>-result.json` | One Allure test per execution: a bot at one plan position in one iteration, or one row of the bot's own data source. |
 | `<id>-container.json` | The run itself, listing every test as a child. |
 | `<id>-attachment.*` | Files attached to a test or a step: the engine answer, screenshots, assertions, exceptions. |
 | `environment.properties` | The run values: `Run`, `Environment`, `Engine`, `Bots.Folder`, `Parallel`, `Scheduled`. |
@@ -99,7 +99,8 @@ A plain bot has **no** parameters, so its title stays short. Parameters appear o
 
 - **Position**, such as `#2`: the bot is in the plan more than once.
 - **Iteration**, such as `3`: the plan has iterations.
-- One parameter per column, such as `User` and `Password`: the values sent in that iteration.
+- **Data row**, such as `2`: the bot ran its own data source, and this result is that row.
+- One parameter per column, such as `User` and `Password`: the values sent in that iteration or row.
 
 Allure adds parameters to the title, so each row of a data-driven run reads as its own test case.
 
@@ -130,10 +131,11 @@ A screenshot value can be a file path, Base64, or a `data:` address. A PNG or JP
 
 ## Step 6: Understand the history id
 
-Allure tracks history by an id. Test Wright builds it from the bot id, plus `#position` when the bot is in the plan more than once, plus `@iteration` when the plan has iterations:
+Allure tracks history by an id. Test Wright builds it from the bot id, plus `#position` when the bot is in the plan more than once, plus `@iteration` when the plan has iterations, plus `~r<row>` for a row of the bot's own data source:
 
 ```text
 smoke/login.json#4@2
+smoke/login.json~r3
 ```
 
 That is why each execution keeps its own history, and why a retried bot in a merged report shows its older results under **Retries**.

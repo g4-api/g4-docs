@@ -4,12 +4,12 @@ Browse every registered source. Imported pages retain their original repository 
 
 | Repository | Area | Documentation | Status |
 | --- | --- | --- | --- |
-| [G4 Studio](https://github.com/g4-api/g4-vscode-extension) | Studio | [90 pages](./products/g4-vscode-extension/README.md) | Import enabled |
+| [G4 Studio](https://github.com/g4-api/g4-vscode-extension) | Studio | [91 pages](./products/g4-vscode-extension/README.md) | Import enabled |
 | [Test Wright for VS Code](https://github.com/g4-api/g4-test-wright-vscode-extension) | Testing | [42 pages](./products/g4-test-wright-vscode-extension/README.md) | Import enabled |
 | [Test Wright desktop](https://github.com/g4-api/g4-test-wright) | Testing | [1 pages](./products/g4-test-wright/README.md) | Import enabled |
 | [G4 Hub](https://github.com/g4-api/g4-services) | Hub | [39 pages](./products/g4-services/README.md) | Import enabled |
-| [Plugin catalog](https://github.com/g4-api/g4-plugins) | Plugins | [173 pages](./products/g4-plugins/README.md) | Import enabled |
-| [G4 Recorders](https://github.com/g4-api/g4-recorders) | Recorders | [20 pages](./products/g4-recorders/README.md) | Import enabled |
+| [Plugin catalog](https://github.com/g4-api/g4-plugins) | Plugins | [183 pages](./products/g4-plugins/README.md) | Import enabled |
+| [G4 Recorders](https://github.com/g4-api/g4-recorders) | Recorders | [22 pages](./products/g4-recorders/README.md) | Import enabled |
 | [UIA Driver Server](https://github.com/g4-api/uia-driver-server) | Drivers and SDKs | [10 pages](./products/uia-driver-server/README.md) | Import enabled |
 | [SAP Driver Server](https://github.com/g4-api/sap-driver-server) | Drivers and SDKs | [5 pages](./products/sap-driver-server/README.md) | Import enabled |
 | [G4 WebDriver client](https://github.com/g4-api/g4-web-driver-client) | Drivers and SDKs | [15 pages](./products/g4-web-driver-client/README.md) | Import enabled |
