@@ -160,4 +160,9 @@ This project is licensed under the [Apache License 2.0](LICENSE). By contributin
 
 ## Contributing and builds
 
-Build tools, test commands, version numbers, Docker images and development ports are in the [build, test and release guide](../g4-github-actions/docs/build-test-release.md).
+Build `src/G4.sln` and run its tests with the .NET 10 SDK.
+The release pipeline runs the unit tests on Windows, without the `LocalOnly` category, and publishes the NuGet
+package from `main` only when every test passes. Tests that need a resource a hosted runner does not have carry
+`[TestCategory("LocalOnly")]`; run them on your workstation. The tests need the settings file:
+`dotnet test --settings test/settings/Local.runsettings`.
+Changes are listed in the [changelog](docs/CHANGELOG.md).

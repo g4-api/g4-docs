@@ -28,10 +28,10 @@ Checks a key from a rule argument or an element’s text or attribute and then r
 
 ### Usages in Automation Testing
 
-| Use Case             | Description                                                          |
+| Use Case              | Description                                                          |
 | --- | --- |
-| Scenario-Based Tests | Run different checks based on a value taken from the app under test. |
-| Fallback Verification| Use a default test path if no specific case matches.                 |
+| Scenario-Based Tests  | Run different checks based on a value taken from the app under test. |
+| Fallback Verification | Use a default test path if no specific case matches.                 |
 
 ## Examples
 
@@ -229,7 +229,7 @@ var actionRule = new ActionRuleModel
     Argument = "{{$ --IgnoreCase}}",
     OnAttribute = "onclick",
     OnElement = "//button[@id='cartActionButton']",
-    RegularExpression = "([A-Z])\w+"
+    RegularExpression = "([A-Z])\\w+"
 };
 ```
 
@@ -241,7 +241,7 @@ ActionRuleModel actionRule = new ActionRuleModel()
     .setArgument("{{$ --IgnoreCase}}")
     .setOnAttribute("onclick")
     .setOnElement("//button[@id='cartActionButton']")
-    .setRegularExpression("([A-Z])\w+");
+    .setRegularExpression("([A-Z])\\w+");
 ```
 
 **Javascript:**
@@ -252,7 +252,7 @@ var actionRule = {
     argument: "{{$ --IgnoreCase}}",
     onAttribute: "onclick",
     onElement: "//button[@id='cartActionButton']",
-    regularExpression: "([A-Z])\w+"
+    regularExpression: "([A-Z])\\w+"
 };
 ```
 
@@ -264,7 +264,7 @@ var actionRule = {
     "argument": "{{$ --IgnoreCase}}",
     "onAttribute": "onclick",
     "onElement": "//button[@id='cartActionButton']",
-    "regularExpression": "([A-Z])\w+"
+    "regularExpression": "([A-Z])\\w+"
 }
 ```
 
@@ -276,7 +276,7 @@ action_rule = {
     "argument": "{{$ --IgnoreCase}}",
     "onAttribute": "onclick",
     "onElement": "//button[@id='cartActionButton']",
-    "regularExpression": "([A-Z])\w+"
+    "regularExpression": "([A-Z])\\w+"
 }
 ```
 
@@ -390,13 +390,13 @@ action_rule = {
 
 ### Argument (Argument)
 
-| Attribute         | Value             |
-| ----------------- | ----------------- |
-| **Default Value** | Null              |
-| **Depends On**    | None              |
-| **Mandatory**     | No                |
-| **Multiple**      | No                |
-| **Value Type**    | String|Expression |
+| Attribute          | Value              |
+| ------------------ | ------------------ |
+| **Default Value**  | Null               |
+| **Depends On**     | None               |
+| **Mandatory**      | No                 |
+| **Multiple**       | No                 |
+| **Value Type**     | String\|Expression |
 
 Holds a fixed value or a dynamic expression to set the switch key or options.
 It can use a simple text key or pull a value from parameters at runtime.
@@ -450,7 +450,7 @@ Correct choices ensure the right data is captured.
 
 | Attribute         | Value             |
 | ----------------- | ----------------- |
-| **Default Value** | Null              |
+| **Default Value** | (?s).*            |
 | **Depends On**    | None              |
 | **Mandatory**     | No                |
 | **Multiple**      | No                |
@@ -464,13 +464,13 @@ Applying a clear pattern ensures the correct substring is extracted.
 
 ### Switch On (SwitchOn)
 
-| Attribute         | Value             |
-| ----------------- | ----------------- |
-| **Default Value** | Null              |
-| **Depends On**    | None              |
-| **Mandatory**     | No                |
-| **Multiple**      | No                |
-| **Value Type**    | String|Expression |
+| Attribute          | Value              |
+| ------------------ | ------------------ |
+| **Default Value**  | Null               |
+| **Depends On**     | None               |
+| **Mandatory**      | No                 |
+| **Multiple**       | No                 |
+| **Value Type**     | String\|Expression |
 
 A static value used to pick a branch when no element provides a key.
 If missing, the plugin uses the main argument value to decide.

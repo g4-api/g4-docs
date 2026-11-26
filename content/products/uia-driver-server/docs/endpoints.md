@@ -62,6 +62,9 @@ Each summary is quoted from the `SwaggerOperation` attribute of the action.
 | --- | --- | --- |
 | POST | `session/{session}/actions` | Sends User32 actions to the specified session. |
 
+A `pointerDown` or `pointerUp` action presses or releases the button its W3C `button` names: 0 is left, 1 is
+middle and 2 is right. Any other button, such as back (3) or forward (4), uses the left button.
+
 ### User32 extension (User32Controller.cs)
 
 | Verb | Route | Swagger summary |
@@ -81,6 +84,18 @@ Each summary is quoted from the `SwaggerOperation` attribute of the action.
 | POST | `session/{session}/user32/element/{element}/dclick` | Invokes a double-click action on the specified element in the given session. |
 | POST | `session/{session}/user32/mouse/move` | Sets the mouse position to the specified coordinates in the given session. |
 | POST | `session/{session}/user32/element/{element}/mouse/move` | Sets the mouse position to the specified element in the given session. |
+
+The element mouse move takes `alignment`, `offsetX` and `offsetY`. The alignment picks a point of the element's bounding rectangle, and the offsets move that point by the given number of pixels. Every alignment applies the offsets, `MiddleCenter` included. An empty alignment means `TopLeft`. The response is the point the cursor moved to.
+
+### OCR (OcrController.cs)
+
+This route exists only in the `-emgu` build of the server. The standard build answers it with HTTP 404.
+
+| Verb | Route | Swagger summary |
+| --- | --- | --- |
+| GET | `session/{session}/ocr` | Captures the screen and returns it with the OCR words recognized on it. |
+
+The response value holds `screenshot`, a Base64-encoded PNG of the primary display, and `words`. Each word has `text`, `rectangle`, `confidence`, `index` and `locator`. The [OCR Inspector](https://github.com/g4-api/ocr-inspector) reads this route to show what the server recognizes. See [Locators](locators.md#using-the-ocr-locator).
 
 ### Meta (MetaController.cs)
 

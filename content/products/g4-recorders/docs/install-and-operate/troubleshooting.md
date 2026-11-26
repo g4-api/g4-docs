@@ -14,14 +14,14 @@ Recorder messages are written to the console window of the recorder. Messages fr
 
 - **Cause:** The recorder is not running, it listens on another port, or another program already holds the port. The G4 Hub Worker also defaults to port 9955, the UIA recorder port.
 - **Check:** Look at the recorder console window. Check the `Url` value in the recorder's `appsettings.json`. Run `netstat -ano | findstr :9955` to see who holds a port.
-- **Fix:** Start the recorder, or change its port as in [Module 5](05-ports-origins-and-logs.md).
+- **Fix:** Start the recorder, or change its port as in [Module 6](06-ports-origins-and-logs.md).
 - **Source:** `src/G4.Recorders.Uia/appsettings.json:14`
 
 ### The browser blocks a call to the recorder with a CORS error
 
 - **Cause:** The origin of your page is not in the allowed list. Origins are matched exactly, including the scheme and the port.
 - **Check:** Compare the origin shown in the browser error with the entries of `ORIGINS` or `AllowedOrigins`.
-- **Fix:** Add the origin as in [Module 5](05-ports-origins-and-logs.md), then restart the recorder.
+- **Fix:** Add the origin as in [Module 6](06-ports-origins-and-logs.md), then restart the recorder.
 - **Source:** `src/G4.Recorders.Uia/Program.cs:134-146`
 
 ---
@@ -33,35 +33,35 @@ Recorder messages are written to the console window of the recorder. Messages fr
 - **Cause:** Windows refused the low-level keyboard hook. The recorder is not in an interactive session, or it lacks the rights. The message ends with the Win32 error code.
 - **Check:** Make sure the console window belongs to your signed-in desktop session, not a service or a non-interactive remote session. Check that you accepted the administrator prompt.
 - **Fix:** Close the recorder and start it again as administrator in your desktop session.
-- **Source:** `src/G4.Recorders.Uia.Domain/Middlewares/UiaEventCaptureService.cs:281`
+- **Source:** `src/G4.Recorders.Uia.Domain/Middlewares/UiaEventCaptureService.cs:291`
 
 ### Failed to install global mouse hook
 
 - **Cause:** Windows refused the low-level mouse hook. Both hooks are tried first, then the keyboard hook is checked. If the keyboard hook failed, you see the keyboard message instead.
 - **Check:** Read the Win32 error code at the end of the message.
 - **Fix:** Start the recorder again as administrator in your desktop session.
-- **Source:** `src/G4.Recorders.Uia.Domain/Middlewares/UiaEventCaptureService.cs:289`
+- **Source:** `src/G4.Recorders.Uia.Domain/Middlewares/UiaEventCaptureService.cs:299`
 
 ### Skipped event; access denied to a higher-privilege UI element
 
 - **Cause:** You clicked or typed in a window that runs at a higher integrity level than the recorder, such as an application started as administrator. The recorder skips that event.
 - **Check:** Check whether the target application was started as administrator.
 - **Fix:** Run the recorder as administrator. The UIA program asks for this when it starts, so accept the prompt.
-- **Source:** `src/G4.Recorders.Uia.Domain/Middlewares/UiaEventCaptureService.cs:1485`
+- **Source:** `src/G4.Recorders.Uia.Domain/Middlewares/UiaEventCaptureService.cs:1535`
 
 ### Failed to resolve event
 
 - **Cause:** One event could not be turned into a UI Automation chain. The recorder logs it and goes on with the next event, so one bad event does not stop the recording.
 - **Check:** Read the exception that follows the message. Note the event type and the timestamp.
 - **Fix:** Repeat the action. If it keeps failing on the same control, note the control's details and report them.
-- **Source:** `src/G4.Recorders.Uia.Domain/Middlewares/UiaEventCaptureService.cs:1503`
+- **Source:** `src/G4.Recorders.Uia.Domain/Middlewares/UiaEventCaptureService.cs:1553`
 
 ### UI Automation focus monitoring failed to start
 
 - **Cause:** The recorder could not register for focus changes. Keyboard and mouse recording still work.
 - **Check:** Read the exception that follows the message.
 - **Fix:** Restart the recorder. Focus-based peeks may be less accurate until you do.
-- **Source:** `src/G4.Recorders.Uia.Domain/Middlewares/UiaEventCaptureService.cs:531`
+- **Source:** `src/G4.Recorders.Uia.Domain/Middlewares/UiaEventCaptureService.cs:542`
 
 ### The current physical cursor position is unavailable
 
@@ -107,28 +107,28 @@ Recorder messages are written to the console window of the recorder. Messages fr
 - **Cause:** A peek call arrived, but no browser with the recorder extension is connected to the hub. REST callers see this as `503`.
 - **Check:** Make sure you launched the browser through the recorder, and that it is still open.
 - **Fix:** Launch a recorder browser as in [Module 3](03-chromium-recorder.md), then repeat the call.
-- **Source:** `src/G4.Recorders.Chromium.Domain/ChromiumRecorderRepository.cs:92`
+- **Source:** `src/G4.Recorders.Chromium.Domain/ChromiumRecorderRepository.cs:134`
 
 ### More than one Chromium recorder extension is connected; the target is ambiguous
 
 - **Cause:** Two recorder browsers are connected at once. A peek call must pick exactly one.
 - **Check:** Count the recorder browsers that are open.
 - **Fix:** Stop one browser with the `DELETE` call and its process id, then repeat the call.
-- **Source:** `src/G4.Recorders.Chromium.Domain/ChromiumRecorderRepository.cs:93`
+- **Source:** `src/G4.Recorders.Chromium.Domain/ChromiumRecorderRepository.cs:135`
 
 ### The Chromium recorder extension did not answer the peek request in time
 
 - **Cause:** The extension did not return an element within 5 seconds. REST callers see this as `504`. The page may be busy, hidden or still loading.
 - **Check:** Look at the recorder browser. Make sure the tab is open and has finished loading.
 - **Fix:** Repeat the call. If it keeps timing out, reload the tab so the content script is injected again.
-- **Source:** `src/G4.Recorders.Chromium.Domain/ChromiumRecorderRepository.cs:138`
+- **Source:** `src/G4.Recorders.Chromium.Domain/ChromiumRecorderRepository.cs:182`
 
 ### The Chromium recorder extension disconnected during the peek request
 
 - **Cause:** The browser or the extension closed while a peek was waiting for its answer.
 - **Check:** Check whether the browser was closed, crashed or stopped by another client.
 - **Fix:** Launch a recorder browser again and repeat the call.
-- **Source:** `src/G4.Recorders.Chromium.Domain/ChromiumRecorderRepository.cs:193`
+- **Source:** `src/G4.Recorders.Chromium.Domain/ChromiumRecorderRepository.cs:237`
 
 ---
 
@@ -206,11 +206,78 @@ Recorder messages are written to the console window of the recorder. Messages fr
 
 ---
 
+## Android recorder
+
+### adb was not found on the recorder host
+
+- **Cause:** The recorder looks for adb in `ANDROID_HOME`, `ANDROID_SDK_ROOT`, `android/platform-tools` under the sandbox (`G4_SANDBOX`, or two folders above the program), and the `PATH`. None of them holds it.
+- **Check:** The message lists every path it tried.
+- **Fix:** Install the Android SDK platform-tools and set `ANDROID_HOME` in the environment the recorder starts from, then restart the recorder.
+- **Source:** `src/G4.Recorders.Android.Domain/Adb/AdbPathResolver.cs`
+
+### No Android device is connected
+
+- **Cause:** `adb devices` lists no device in the `device` state.
+- **Check:** Run `adb devices`. `unauthorized` waits for you to accept the prompt on the device; `offline` needs a reconnect.
+- **Fix:** Connect a device with USB debugging on, or start an emulator, then start the recording again.
+- **Source:** `src/G4.Recorders.Android.Domain/AndroidRecorderLauncher.cs`, `ResolveSerialAsync`
+
+### The UIA driver server stops answering after an Android emulator starts
+
+- **Cause:** The emulator took ports `5554` and `5555`, its defaults. The G4 sandbox uses `5554` for the UIA node and `5555` for the UIA driver server.
+- **Check:** Run `adb devices`. An emulator listed as `emulator-5554` uses the two UIA ports.
+- **Fix:** Close the emulator and start it on another port: `emulator -avd <name of your virtual device> -port 5580`. adb then lists it as `emulator-5580`.
+- **Source:** the sandbox's `add-uia-node.cmd` and `start-uia-driver-server.cmd`
+
+### More than one Android device is connected; set appium:udid to choose one
+
+- **Cause:** Several devices are connected and the request names none. The same check reports `Device 'SERIAL' is not connected` when `appium:udid` names a device adb does not list.
+- **Check:** Compare the serials in the message with `adb devices`.
+- **Fix:** Send `appium:udid` in `capabilities.alwaysMatch`.
+- **Source:** `src/G4.Recorders.Android.Domain/AndroidRecorderLauncher.cs`, `ResolveSerialAsync`
+
+### Recorder app not found on the recorder host
+
+- **Cause:** The `G4.Recorders.Android.App.Drop` folder, which holds `g4-recorder.apk`, is missing next to the program.
+- **Check:** Look for `G4.Recorders.Android.App.Drop/g4-recorder.apk` in the recorder folder.
+- **Fix:** Unpack the whole release asset again. For a source build, run the app's Gradle build (`./gradlew assembleRelease` in `src/G4.Recorders.Android.App`), which fills the drop folder, then build the host.
+- **Source:** `src/G4.Recorders.Android.Domain/AndroidRecorderLauncher.cs`, `StartAsync`
+
+### Installing g4-recorder.apk failed
+
+- **Cause:** adb could not install the recorder app, for example because the device has too little space or refuses debug installs. A recorder app signed on another build machine is not a cause: the recorder uninstalls it and installs its own.
+- **Check:** The message ends with adb's own `Failure [CODE]` line.
+- **Fix:** Act on the failure code, then start the recording again.
+- **Source:** `src/G4.Recorders.Android.Domain/AndroidRecorderLauncher.cs`, `InstallRecorderAsync`
+
+### Failed to start PACKAGE on device SERIAL
+
+- **Cause:** `appium:appPackage` or `appium:appActivity` names an app or activity the device does not have.
+- **Check:** Run `adb shell pm list packages` for the package name. Leave `appium:appActivity` empty to start the package's launcher activity.
+- **Fix:** Correct the capability and start again.
+- **Source:** `src/G4.Recorders.Android.Domain/AndroidRecorderLauncher.cs`, `StartApplicationAsync`
+
+### No Android recorder app is connected
+
+- **Cause:** A peek or flush reached the recorder while the app on the device was not connected to it. The app connects through the port that `adb reverse` maps on start; restarting adb (`adb kill-server`, `adb root`) removes that mapping.
+- **Check:** Open **G4 Android Recorder** on the device; it shows the connection state and the last error. Run `adb reverse --list`.
+- **Fix:** Stop the recording and start it again, so the recorder maps the port again.
+- **Source:** `src/G4.Recorders.Android.Domain/AndroidRecorderRepository.cs`, `GetElementChainAsync`
+
+### The Android recorder failed to STEP while stopping
+
+- **Cause:** One restore step on stop failed, for example because the device disconnected. The other steps still ran.
+- **Check:** The console shows the warning when `G4.Recorders` logs at `Warning`, as in [Module 6](06-ports-origins-and-logs.md).
+- **Fix:** Restore that step by hand. `adb shell settings delete secure enabled_accessibility_services` switches the recorder service off when no other service was on; `adb reverse --remove tcp:9958` removes the port mapping.
+- **Source:** `src/G4.Recorders.Android.Domain/AndroidRecorderLauncher.cs`, `StopAsync`
+
+---
+
 ## Any recorder
 
 ### An unhandled exception occurred
 
 - **Cause:** A REST call failed in a way the recorder did not expect. The recorder logs the exception and answers with an error.
-- **Check:** Read the exception in the console. Raise the log level as in [Module 5](05-ports-origins-and-logs.md) if the console shows too little.
+- **Check:** Read the exception in the console. Raise the log level as in [Module 6](06-ports-origins-and-logs.md) if the console shows too little.
 - **Fix:** Fix the cause named by the exception, then repeat the call.
 - **Source:** `src/G4.Recorders.Common.Domain/Middlewares/ErrorHandlingMiddleware.cs:117`

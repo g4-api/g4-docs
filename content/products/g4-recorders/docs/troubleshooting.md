@@ -28,6 +28,14 @@ These messages are explained in [install-and-operate/troubleshooting.md](install
 | The Chromium recorder extension did not answer the peek request in time | Chromium |
 | SAP GUI Scripting is not available | SAP |
 | SAP Logon was not found on the recorder host | SAP |
+| adb was not found on the recorder host | Android |
+| No Android device is connected | Android |
+| More than one Android device is connected; set appium:udid to choose one | Android |
+| Recorder app not found on the recorder host | Android |
+| Installing g4-recorder.apk failed | Android |
+| Failed to start PACKAGE on device SERIAL | Android |
+| No Android recorder app is connected | Android |
+| The Android recorder failed to STEP while stopping | Android |
 | SAP Logon did not start | SAP |
 | Failed to install the input hooks; the user32 stream is incomplete | SAP |
 | A recording is already running with different values | SAP |
@@ -41,7 +49,7 @@ These messages are explained in [install-and-operate/troubleshooting.md](install
 - **Cause:** A key was pressed, but the recorder had no snapshot of the focused element from just before the press. The event is still sent, but without a resolved target. The message lists the `VirtualKey`, `ScanCode` and `Extended` values of the key.
 - **Check:** Look at which key is named, and note the time of the step.
 - **Fix:** The event is not dropped, but its target may be missing. If a step has no target in the flow, repeat it after clicking the field once.
-- **Source:** `src/G4.Recorders.Uia.Domain/Middlewares/UiaEventCaptureService.cs:810`
+- **Source:** `src/G4.Recorders.Uia.Domain/Middlewares/UiaEventCaptureService.cs:821`
 
 ### SetWindowFocus requires windowTitle and/or processName
 
@@ -115,14 +123,14 @@ These messages are explained in [install-and-operate/troubleshooting.md](install
 - **Cause:** The recorder could not store the id of a peek request. The code treats this as an internal fault.
 - **Check:** Repeat the peek once.
 - **Fix:** If it repeats, restart the Chromium recorder and report the problem.
-- **Source:** `src/G4.Recorders.Chromium.Domain/ChromiumRecorderRepository.cs:105`
+- **Source:** `src/G4.Recorders.Chromium.Domain/ChromiumRecorderRepository.cs:147`
 
 ### GetScreenshot is not implemented for the Chromium recorder surface yet
 
 - **Cause:** The Chromium recorder has no screenshot support. The same type of message appears for `MovePointer`, `ResolveGroundedElementAsync` and `SetWindowFocus`.
 - **Check:** Look at which operation the message names.
 - **Fix:** Use the UIA recorder for these operations, or skip them. The REST routes map this error to status 501. See [Peek and observe](events/peek-and-observe.md).
-- **Source:** `src/G4.Recorders.Chromium.Domain/ChromiumRecorderRepository.cs:152` (also `:160`, `:202`, `:210`)
+- **Source:** `src/G4.Recorders.Chromium.Domain/ChromiumRecorderRepository.cs:196` (also `:204`, `:257`, `:265`)
 
 ## SAP recorder
 

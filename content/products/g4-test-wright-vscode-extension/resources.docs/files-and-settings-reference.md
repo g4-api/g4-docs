@@ -194,15 +194,16 @@ The default file name is `g4-data-<time>.json`, where the time has `:` and `.` r
 
 ## Run folder and `run.json`
 
-Every run writes one folder named `yyyy-MM-dd-HHmmssfff` under the reports folder (`src/extensions/utilities.ts:260`). When the name is taken, the next free millisecond is used (`src/services/run-service.ts:267-274`).
+Every run writes one folder named `yyyyMMdd-HHmmss` under the reports folder (`src/extensions/utilities.ts:248`). When two runs start in the same second, the second gets `-2`, the next `-3`, and so on (`src/services/run-service.ts:263-276`).
 
 ```text
 reports/
-    2026-11-08-093000123/
+    20261108-093000/
         run.json
         smoke.login.g4rpt
         smoke.login.p2.i1.g4rpt
-    allure-2026-11-08-093000123/
+        users.p3.r2.g4rpt
+    20261108-093000-allure/
         results/
         report/
     allure-merged/
@@ -234,11 +235,12 @@ Each entry of `tests`:
 
 | Field | Type | Meaning | Source |
 | --- | --- | --- | --- |
-| `runKey` | text | The row key, plus `@<iteration>` when the plan has iterations | `src/models/test-wright-models.ts:210` |
+| `runKey` | text | The row key, plus `@<iteration>` when the plan has iterations, plus `~r<data row>` for a row of the bot's own data source | `src/models/test-wright-models.ts:219` |
 | `key` | text | Plan row key | `src/models/test-wright-models.ts:213` |
 | `position` | number | One-based position in the plan | `src/models/test-wright-models.ts:219` |
-| `iteration` | number | One-based iteration; `0` when the plan had none | `src/models/test-wright-models.ts:219` |
-| `values` | object | The data row sent; absent for a bot without columns | `src/models/test-wright-models.ts:222` |
+| `iteration` | number | One-based iteration; `0` when the plan had none | `src/models/test-wright-models.ts:228` |
+| `dataRow` | number | One-based row of the bot's own data source; absent for plan iterations and static bots | `src/models/test-wright-models.ts:235` |
+| `values` | object | The data row sent or run; absent for a bot without columns | `src/models/test-wright-models.ts:238` |
 | `id`, `name`, `file`, `path`, `suite`, `tags` | text and array | The bot | `src/models/test-wright-models.ts:224-229` |
 | `status` | text | One of `not-run`, `queued`, `running`, `passed`, `failed`, `warning`, `broken`, `canceled` | `src/models/test-wright-models.ts:19` |
 | `start`, `stop`, `duration` | number | Epoch milliseconds, and milliseconds | `src/models/test-wright-models.ts:233-239` |
@@ -249,7 +251,9 @@ Each entry of `tests`:
 
 ### `.g4rpt` report
 
-One file per bot execution, in the run folder. It holds the Base64 text of the engine response JSON, the same format G4 Studio saves (`src/services/run-service.ts:348`). The name is the bot id without its extension, with `/` replaced by `.`, then `.p<position>` and `.i<iteration>` when they apply. A repeated name gets `-2`, `-3` and so on (`src/services/run-service.ts:515-530`).
+One file per bot execution, in the run folder. It holds the Base64 text of the engine response JSON, the same format G4 Studio saves (`src/services/run-service.ts:641-653`). The name is the bot id without its extension, with `/` replaced by `.`, then `.p<position>`, `.i<iteration>`, and `.r<data row>` when they apply. A repeated name gets `-2`, `-3` and so on (`src/services/run-service.ts:549-565`).
+
+A bot that runs its own data source gets all its rows back in one engine answer, one session per row. Test Wright saves one file per row, each holding only that row's session, and writes no combined file (`src/services/response-splitter.ts`, `src/services/run-service.ts:658-687`).
 
 ## Allure results layout
 
@@ -257,13 +261,13 @@ When **Collect** is on, the run writes Allure results next to the run folder.
 
 | Path | Content | Source |
 | --- | --- | --- |
-| `allure-<run>/results/<uuid>-result.json` | One Allure test result per bot execution | `src/services/allure-converter.ts:223` |
-| `allure-<run>/results/<uuid>-container.json` | The run container, named by the label or the run name | `src/services/allure-converter.ts:236-245` |
-| `allure-<run>/results/<uuid>-attachment.<ext>` | Attachments: the `g4-response` JSON, assertion entities, exceptions and screenshots | `src/services/allure-converter.ts:220, 416, 450, 505` |
-| `allure-<run>/results/environment.properties` | `Run`, `Environment`, `Engine`, `Bots.Folder`, `Parallel` and `Scheduled` | `src/services/allure-converter.ts:247-257` |
-| `allure-<run>/results/executor.json` | The executor name `G4 Studio Test Wright` and the build and report names | `src/services/allure-converter.ts:259-265` |
-| `allure-<run>/results/categories.json` | The four categories | `src/services/allure-converter.ts:36-41, 268` |
-| `allure-<run>/report/` | The generated report | `src/services/allure-converter.ts:20-21` |
+| `<run>-allure/results/<uuid>-result.json` | One Allure test result per bot execution | `src/services/allure-converter.ts:223` |
+| `<run>-allure/results/<uuid>-container.json` | The run container, named by the label or the run name | `src/services/allure-converter.ts:236-245` |
+| `<run>-allure/results/<uuid>-attachment.<ext>` | Attachments: the `g4-response` JSON, assertion entities, exceptions and screenshots | `src/services/allure-converter.ts:220, 416, 450, 505` |
+| `<run>-allure/results/environment.properties` | `Run`, `Environment`, `Engine`, `Bots.Folder`, `Parallel` and `Scheduled` | `src/services/allure-converter.ts:247-257` |
+| `<run>-allure/results/executor.json` | The executor name `G4 Studio Test Wright` and the build and report names | `src/services/allure-converter.ts:259-265` |
+| `<run>-allure/results/categories.json` | The four categories | `src/services/allure-converter.ts:36-41, 268` |
+| `<run>-allure/report/` | The generated report | `src/services/allure-converter.ts:20-21` |
 | `allure-merged/` | A report merged from several runs | `src/services/allure-converter.ts:22, 47` |
 
 A new conversion deletes the old results folder of that run first, so results are never doubled (`src/services/allure-converter.ts:113`). For parameters, labels and categories, see [Allure in Depth](allure-in-depth/README.md).

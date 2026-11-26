@@ -2,7 +2,7 @@
 
 [Table of Content](../Home.md)
 
-~20 min · Action Plugin · [Roei Sabag](https://www.linkedin.com/in/roei-sabag-247aa18/)
+~28 min · Action Plugin · [Roei Sabag](https://www.linkedin.com/in/roei-sabag-247aa18/)
 
 ## Description
 
@@ -23,7 +23,7 @@ Reports how many batches ran and how many rows changed so later steps can confir
 | Optional transaction | Commits after the last batch or rolls back every batch on failure when `Transaction` is present.      |
 | Per-batch timeout    | Applies `CommandTimeout` to each batch separately.                                                   |
 | Run totals           | Returns `BatchCount` and the summed `RowsAffected`.                                                  |
-| Flexible connection  | Connects through a credentials record, a connection string, discrete values, or a Microsoft Entra token. |
+| Flexible connection  | Connects through a credentials record, a connection string, or a Microsoft Entra access token.       |
 | Entity control       | Omits the response entity when `NoEntity` is present while still writing session parameters.         |
 
 ### Usages in RPA
@@ -57,11 +57,24 @@ Reports how many batches ran and how many rows changed so later steps can confir
 
 1. `Credentials` selects a stored SQL Server credentials record by name or id.
 2. When no record matches, a `Credentials` value that contains `=` is used as a raw connection string, and any other value is used as a raw Microsoft Entra access token.
-3. Without `Credentials`, `ConnectionString` supplies the baseline connection.
-4. `Server`, `Port`, `Database`, `Authentication`, `Username`, `Password`, `Encrypt`, `TrustServerCertificate`, and `Token` override the baseline values they set.
+3. Without `Credentials`, `ConnectionString` supplies the connection.
+4. `Token` supplies a raw Microsoft Entra access token, for a connection that carries no password or `Authentication` keyword.
 5. The step fails when no server is resolved.
 
 Session parameters are named `InvokeSqlServerScript:<Name>` and are Base64-encoded, so decode them before use.
+
+### Choosing InvokeSqlServerNonQuery or InvokeSqlServerScript
+
+| Need | Use |
+| --- | --- |
+| Insert or change rows with values from earlier steps or macros | InvokeSqlServerNonQuery, because Parameters binds the values as typed SQL parameters. |
+| Run a script with `GO` lines, such as a file from SSMS or sqlcmd | InvokeSqlServerScript, because only it splits the text into batches on `GO`. |
+| Keep `USE` or `SET` options across batches | InvokeSqlServerScript, because every batch runs on one shared connection. |
+| Get the exact row count of one statement | InvokeSqlServerNonQuery, because it reports the server count, including -1 for DDL. |
+| Insert explicit IDENTITY values with a bound value | InvokeSqlServerNonQuery, with `SET IDENTITY_INSERT ... ON`, the INSERT, and `SET IDENTITY_INSERT ... OFF` in one batch separated by semicolons. |
+
+InvokeSqlServerNonQuery sends its text as one batch, so SQL Server rejects a `GO` line with a syntax error.
+InvokeSqlServerScript takes no Parameters, because SQL Server runs a parameterized command in its own scope and undoes `USE` and most `SET` options when that scope ends.
 
 ## Examples
 
@@ -78,7 +91,7 @@ Transaction commits after the last batch succeeds and rolls back every batch whe
 var actionRule = new ActionRuleModel
 {
     PluginName = "InvokeSqlServerScript",
-    Argument = "{{$ --CommandFile:C:\Scripts\deploy.sql --Credentials:sql-production --Transaction --CommandTimeout:120}}"
+    Argument = "{{$ --CommandFile:C:\\Scripts\\deploy.sql --Credentials:sql-production --Transaction --CommandTimeout:120}}"
 };
 ```
 
@@ -87,7 +100,7 @@ var actionRule = new ActionRuleModel
 ```java
 ActionRuleModel actionRule = new ActionRuleModel()
     .setPluginName("InvokeSqlServerScript")
-    .setArgument("{{$ --CommandFile:C:\Scripts\deploy.sql --Credentials:sql-production --Transaction --CommandTimeout:120}}");
+    .setArgument("{{$ --CommandFile:C:\\Scripts\\deploy.sql --Credentials:sql-production --Transaction --CommandTimeout:120}}");
 ```
 
 **Javascript:**
@@ -95,7 +108,7 @@ ActionRuleModel actionRule = new ActionRuleModel()
 ```js
 var actionRule = {
     pluginName: "InvokeSqlServerScript",
-    argument: "{{$ --CommandFile:C:\Scripts\deploy.sql --Credentials:sql-production --Transaction --CommandTimeout:120}}"
+    argument: "{{$ --CommandFile:C:\\Scripts\\deploy.sql --Credentials:sql-production --Transaction --CommandTimeout:120}}"
 };
 ```
 
@@ -104,7 +117,7 @@ var actionRule = {
 ```js
 {
     "pluginName": "InvokeSqlServerScript",
-    "argument": "{{$ --CommandFile:C:\Scripts\deploy.sql --Credentials:sql-production --Transaction --CommandTimeout:120}}"
+    "argument": "{{$ --CommandFile:C:\\Scripts\\deploy.sql --Credentials:sql-production --Transaction --CommandTimeout:120}}"
 }
 ```
 
@@ -113,16 +126,16 @@ var actionRule = {
 ```python
 action_rule = {
     "pluginName": "InvokeSqlServerScript",
-    "argument": "{{$ --CommandFile:C:\Scripts\deploy.sql --Credentials:sql-production --Transaction --CommandTimeout:120}}"
+    "argument": "{{$ --CommandFile:C:\\Scripts\\deploy.sql --Credentials:sql-production --Transaction --CommandTimeout:120}}"
 }
 ```
 
 ### Example No.2
 
-### Repeat an inline batch with a raw connection string
+### Repeat an inline batch with a connection string in Credentials
 
 Creates dbo.LoadProbe when missing, then repeats a single-row insert five times with a `GO 5` separator.
-The Credentials value is a raw connection string to localhost,1433, and NoEntity omits the response entity.
+The Credentials value is a raw connection string to localhost,1433, which the step accepts because it contains equals signs, and NoEntity omits the response entity.
 
 **CSharp:**
 
@@ -130,10 +143,7 @@ The Credentials value is a raw connection string to localhost,1433, and NoEntity
 var actionRule = new ActionRuleModel
 {
     PluginName = "InvokeSqlServerScript",
-    Argument = "{{$ --Credentials:Server=localhost,1433;Database=QaSandbox;Integrated Security=true;TrustServerCertificate=true --CommandText:IF OBJECT_ID(N'dbo.LoadProbe') IS NULL CREATE TABLE dbo.LoadProbe (Id INT IDENTITY PRIMARY KEY, CreatedAt DATETIME2 NOT NULL);
-GO
-INSERT INTO dbo.LoadProbe (CreatedAt) VALUES (SYSUTCDATETIME());
-GO 5 --NoEntity}}"
+    Argument = "{{$ --Credentials:Server=localhost,1433;Database=QaSandbox;Integrated Security=true;TrustServerCertificate=true --CommandText:IF OBJECT_ID(N'dbo.LoadProbe') IS NULL CREATE TABLE dbo.LoadProbe (Id INT IDENTITY PRIMARY KEY, CreatedAt DATETIME2 NOT NULL);\nGO\nINSERT INTO dbo.LoadProbe (CreatedAt) VALUES (SYSUTCDATETIME());\nGO 5 --NoEntity}}"
 };
 ```
 
@@ -142,10 +152,7 @@ GO 5 --NoEntity}}"
 ```java
 ActionRuleModel actionRule = new ActionRuleModel()
     .setPluginName("InvokeSqlServerScript")
-    .setArgument("{{$ --Credentials:Server=localhost,1433;Database=QaSandbox;Integrated Security=true;TrustServerCertificate=true --CommandText:IF OBJECT_ID(N'dbo.LoadProbe') IS NULL CREATE TABLE dbo.LoadProbe (Id INT IDENTITY PRIMARY KEY, CreatedAt DATETIME2 NOT NULL);
-GO
-INSERT INTO dbo.LoadProbe (CreatedAt) VALUES (SYSUTCDATETIME());
-GO 5 --NoEntity}}");
+    .setArgument("{{$ --Credentials:Server=localhost,1433;Database=QaSandbox;Integrated Security=true;TrustServerCertificate=true --CommandText:IF OBJECT_ID(N'dbo.LoadProbe') IS NULL CREATE TABLE dbo.LoadProbe (Id INT IDENTITY PRIMARY KEY, CreatedAt DATETIME2 NOT NULL);\nGO\nINSERT INTO dbo.LoadProbe (CreatedAt) VALUES (SYSUTCDATETIME());\nGO 5 --NoEntity}}");
 ```
 
 **Javascript:**
@@ -153,10 +160,7 @@ GO 5 --NoEntity}}");
 ```js
 var actionRule = {
     pluginName: "InvokeSqlServerScript",
-    argument: "{{$ --Credentials:Server=localhost,1433;Database=QaSandbox;Integrated Security=true;TrustServerCertificate=true --CommandText:IF OBJECT_ID(N'dbo.LoadProbe') IS NULL CREATE TABLE dbo.LoadProbe (Id INT IDENTITY PRIMARY KEY, CreatedAt DATETIME2 NOT NULL);
-GO
-INSERT INTO dbo.LoadProbe (CreatedAt) VALUES (SYSUTCDATETIME());
-GO 5 --NoEntity}}"
+    argument: "{{$ --Credentials:Server=localhost,1433;Database=QaSandbox;Integrated Security=true;TrustServerCertificate=true --CommandText:IF OBJECT_ID(N'dbo.LoadProbe') IS NULL CREATE TABLE dbo.LoadProbe (Id INT IDENTITY PRIMARY KEY, CreatedAt DATETIME2 NOT NULL);\nGO\nINSERT INTO dbo.LoadProbe (CreatedAt) VALUES (SYSUTCDATETIME());\nGO 5 --NoEntity}}"
 };
 ```
 
@@ -165,10 +169,7 @@ GO 5 --NoEntity}}"
 ```js
 {
     "pluginName": "InvokeSqlServerScript",
-    "argument": "{{$ --Credentials:Server=localhost,1433;Database=QaSandbox;Integrated Security=true;TrustServerCertificate=true --CommandText:IF OBJECT_ID(N'dbo.LoadProbe') IS NULL CREATE TABLE dbo.LoadProbe (Id INT IDENTITY PRIMARY KEY, CreatedAt DATETIME2 NOT NULL);
-GO
-INSERT INTO dbo.LoadProbe (CreatedAt) VALUES (SYSUTCDATETIME());
-GO 5 --NoEntity}}"
+    "argument": "{{$ --Credentials:Server=localhost,1433;Database=QaSandbox;Integrated Security=true;TrustServerCertificate=true --CommandText:IF OBJECT_ID(N'dbo.LoadProbe') IS NULL CREATE TABLE dbo.LoadProbe (Id INT IDENTITY PRIMARY KEY, CreatedAt DATETIME2 NOT NULL);\nGO\nINSERT INTO dbo.LoadProbe (CreatedAt) VALUES (SYSUTCDATETIME());\nGO 5 --NoEntity}}"
 }
 ```
 
@@ -177,10 +178,7 @@ GO 5 --NoEntity}}"
 ```python
 action_rule = {
     "pluginName": "InvokeSqlServerScript",
-    "argument": "{{$ --Credentials:Server=localhost,1433;Database=QaSandbox;Integrated Security=true;TrustServerCertificate=true --CommandText:IF OBJECT_ID(N'dbo.LoadProbe') IS NULL CREATE TABLE dbo.LoadProbe (Id INT IDENTITY PRIMARY KEY, CreatedAt DATETIME2 NOT NULL);
-GO
-INSERT INTO dbo.LoadProbe (CreatedAt) VALUES (SYSUTCDATETIME());
-GO 5 --NoEntity}}"
+    "argument": "{{$ --Credentials:Server=localhost,1433;Database=QaSandbox;Integrated Security=true;TrustServerCertificate=true --CommandText:IF OBJECT_ID(N'dbo.LoadProbe') IS NULL CREATE TABLE dbo.LoadProbe (Id INT IDENTITY PRIMARY KEY, CreatedAt DATETIME2 NOT NULL);\nGO\nINSERT INTO dbo.LoadProbe (CreatedAt) VALUES (SYSUTCDATETIME());\nGO 5 --NoEntity}}"
 }
 ```
 
@@ -236,6 +234,110 @@ action_rule = {
 }
 ```
 
+### Example No.4
+
+### Run a script file with a connection string
+
+The argument passes a complete connection string through the ConnectionString parameter instead of a stored credentials record.
+The nightly load script runs in one transaction with a five-minute timeout, so a failing batch leaves the database unchanged.
+
+**CSharp:**
+
+```csharp
+var actionRule = new ActionRuleModel
+{
+    PluginName = "InvokeSqlServerScript",
+    Argument = "{{$ --ConnectionString:Server=sql01.contoso.local;Database=Warehouse;Integrated Security=true;TrustServerCertificate=true --CommandFile:C:\\Scripts\\nightly-load.sql --Transaction --CommandTimeout:300}}"
+};
+```
+
+**Java:**
+
+```java
+ActionRuleModel actionRule = new ActionRuleModel()
+    .setPluginName("InvokeSqlServerScript")
+    .setArgument("{{$ --ConnectionString:Server=sql01.contoso.local;Database=Warehouse;Integrated Security=true;TrustServerCertificate=true --CommandFile:C:\\Scripts\\nightly-load.sql --Transaction --CommandTimeout:300}}");
+```
+
+**Javascript:**
+
+```js
+var actionRule = {
+    pluginName: "InvokeSqlServerScript",
+    argument: "{{$ --ConnectionString:Server=sql01.contoso.local;Database=Warehouse;Integrated Security=true;TrustServerCertificate=true --CommandFile:C:\\Scripts\\nightly-load.sql --Transaction --CommandTimeout:300}}"
+};
+```
+
+**JSON:**
+
+```js
+{
+    "pluginName": "InvokeSqlServerScript",
+    "argument": "{{$ --ConnectionString:Server=sql01.contoso.local;Database=Warehouse;Integrated Security=true;TrustServerCertificate=true --CommandFile:C:\\Scripts\\nightly-load.sql --Transaction --CommandTimeout:300}}"
+}
+```
+
+**Python:**
+
+```python
+action_rule = {
+    "pluginName": "InvokeSqlServerScript",
+    "argument": "{{$ --ConnectionString:Server=sql01.contoso.local;Database=Warehouse;Integrated Security=true;TrustServerCertificate=true --CommandFile:C:\\Scripts\\nightly-load.sql --Transaction --CommandTimeout:300}}"
+}
+```
+
+### Example No.5
+
+### Log a run with a Base64 script that holds a macro
+
+The argument binds the `sql-production` credentials, a Base64 CommandText, and the Base64 switch at runtime.
+The decoded SQL holds a ` --` comment and a New-Date macro; the macro is resolved after decoding, so the server receives the current date: `INSERT INTO dbo.RunLog (RunDate) VALUES ('{{$New-Date --Format:yyyy-MM-dd}}'); -- one row per run` and the lines after it.
+
+**CSharp:**
+
+```csharp
+var actionRule = new ActionRuleModel
+{
+    PluginName = "InvokeSqlServerScript",
+    Argument = "{{$ --Credentials:sql-production --CommandText:SU5TRVJUIElOVE8gZGJvLlJ1bkxvZyAoUnVuRGF0ZSkgVkFMVUVTICgne3skTmV3LURhdGUgLS1Gb3JtYXQ6eXl5eS1NTS1kZH19Jyk7IC0tIG9uZSByb3cgcGVyIHJ1bgpHTwpERUxFVEUgRlJPTSBkYm8uUnVuTG9nIFdIRVJFIFJ1bkRhdGUgPCBEQVRFQUREKGRheSwgLTMwLCBHRVREQVRFKCkpOw== --Base64}}"
+};
+```
+
+**Java:**
+
+```java
+ActionRuleModel actionRule = new ActionRuleModel()
+    .setPluginName("InvokeSqlServerScript")
+    .setArgument("{{$ --Credentials:sql-production --CommandText:SU5TRVJUIElOVE8gZGJvLlJ1bkxvZyAoUnVuRGF0ZSkgVkFMVUVTICgne3skTmV3LURhdGUgLS1Gb3JtYXQ6eXl5eS1NTS1kZH19Jyk7IC0tIG9uZSByb3cgcGVyIHJ1bgpHTwpERUxFVEUgRlJPTSBkYm8uUnVuTG9nIFdIRVJFIFJ1bkRhdGUgPCBEQVRFQUREKGRheSwgLTMwLCBHRVREQVRFKCkpOw== --Base64}}");
+```
+
+**Javascript:**
+
+```js
+var actionRule = {
+    pluginName: "InvokeSqlServerScript",
+    argument: "{{$ --Credentials:sql-production --CommandText:SU5TRVJUIElOVE8gZGJvLlJ1bkxvZyAoUnVuRGF0ZSkgVkFMVUVTICgne3skTmV3LURhdGUgLS1Gb3JtYXQ6eXl5eS1NTS1kZH19Jyk7IC0tIG9uZSByb3cgcGVyIHJ1bgpHTwpERUxFVEUgRlJPTSBkYm8uUnVuTG9nIFdIRVJFIFJ1bkRhdGUgPCBEQVRFQUREKGRheSwgLTMwLCBHRVREQVRFKCkpOw== --Base64}}"
+};
+```
+
+**JSON:**
+
+```js
+{
+    "pluginName": "InvokeSqlServerScript",
+    "argument": "{{$ --Credentials:sql-production --CommandText:SU5TRVJUIElOVE8gZGJvLlJ1bkxvZyAoUnVuRGF0ZSkgVkFMVUVTICgne3skTmV3LURhdGUgLS1Gb3JtYXQ6eXl5eS1NTS1kZH19Jyk7IC0tIG9uZSByb3cgcGVyIHJ1bgpHTwpERUxFVEUgRlJPTSBkYm8uUnVuTG9nIFdIRVJFIFJ1bkRhdGUgPCBEQVRFQUREKGRheSwgLTMwLCBHRVREQVRFKCkpOw== --Base64}}"
+}
+```
+
+**Python:**
+
+```python
+action_rule = {
+    "pluginName": "InvokeSqlServerScript",
+    "argument": "{{$ --Credentials:sql-production --CommandText:SU5TRVJUIElOVE8gZGJvLlJ1bkxvZyAoUnVuRGF0ZSkgVkFMVUVTICgne3skTmV3LURhdGUgLS1Gb3JtYXQ6eXl5eS1NTS1kZH19Jyk7IC0tIG9uZSByb3cgcGVyIHJ1bgpHTwpERUxFVEUgRlJPTSBkYm8uUnVuTG9nIFdIRVJFIFJ1bkRhdGUgPCBEQVRFQUREKGRheSwgLTMwLCBHRVREQVRFKCkpOw== --Base64}}"
+}
+```
+
 ## Output Parameter
 
 ### Invoke Sql Server Script Batch Count (InvokeSqlServerScript:BatchCount)
@@ -269,62 +371,6 @@ Stored as a Base64-encoded session parameter, so decode it before use.
 
 ## Parameters
 
-### Authentication (Authentication)
-
-| Attribute         | Value             |
-| ----------------- | ----------------- |
-| **Default Value** | Null              |
-| **Depends On**    | None              |
-| **Mandatory**     | No                |
-| **Multiple**      | No                |
-| **Value Type**    | String            |
-
-Selects the sign-in method used to connect to SQL Server.
-Overrides the method from the credentials record or the connection string, so one target can switch between SQL logins, Windows sign-in, and Microsoft Entra sign-in.
-Leave it empty to keep the method the baseline connection already defines.
-
-#### Values
-
-##### Sql Password
-
-Signs in with a SQL Server login name and password.
-Supply the login through Username and Password or through the credentials record.
-
-##### Integrated
-
-Signs in with the Windows account that runs the automation.
-No user name or password is sent to the server.
-
-##### Active Directory Default
-
-Signs in with the Microsoft Entra default credential chain, such as environment settings, a managed identity, or a developer tool sign-in.
-Fits services that already carry a Microsoft Entra identity.
-
-##### Active Directory Integrated
-
-Signs in with the Microsoft Entra identity of the current domain-joined Windows user.
-No password is passed in the step.
-
-##### Active Directory Interactive
-
-Signs in through an interactive Microsoft Entra prompt.
-Fits attended runs where a person can complete multi-factor sign-in.
-
-##### Active Directory Managed Identity
-
-Signs in with the managed identity of the Azure host that runs the automation.
-Username can carry the client id of a user-assigned identity.
-
-##### Active Directory Password
-
-Signs in with a Microsoft Entra user name and password.
-Accounts that require multi-factor authentication cannot use this method.
-
-##### Active Directory Service Principal
-
-Signs in as a Microsoft Entra application.
-Username carries the application client id and Password carries the client secret.
-
 ### Base64 (Base64)
 
 | Attribute         | Value             |
@@ -336,37 +382,41 @@ Username carries the application client id and Password carries the client secre
 | **Value Type**    | Switch            |
 
 Decodes the CommandText value from UTF-8 Base64 before the script is split into batches.
+After decoding, the macros in the decoded value are resolved, because the engine resolves the macros of a rule before the plugin runs and cannot see them while the value is encoded.
+A macro result becomes part of the SQL text, so values that come from outside the automation belong in the Parameters argument instead.
 Encoding the SQL as Base64 lets inline text that contains a space followed by two dashes or a double closing brace travel safely, because those sequences otherwise end an inline argument value.
 Only CommandText is decoded, so CommandFile content is always read as plain text.
 Invalid Base64 fails the step before anything is sent to SQL Server, so encoded text never runs as SQL.
 
 ### Command File (CommandFile)
 
-| Attribute         | Value             |
-| ----------------- | ----------------- |
-| **Default Value** | Null              |
-| **Depends On**    | None              |
-| **Mandatory**     | No                |
-| **Multiple**      | No                |
-| **Value Type**    | String|Expression |
+| Attribute          | Value              |
+| ------------------ | ------------------ |
+| **Default Value**  | Null               |
+| **Depends On**     | None               |
+| **Mandatory**      | No                 |
+| **Multiple**       | No                 |
+| **Value Type**     | String\|Expression |
 
 Points to a UTF-8 .sql file that holds the script, such as C:\Scripts\deploy.sql.
 Supports long multi-line scripts, SQL comments, and characters that cannot travel inside an inline argument.
 Used only when CommandText is empty, and a missing file fails the step.
+Macros inside the file are not resolved, because the file is read only when the step runs.
 
 ### Command Text (CommandText)
 
-| Attribute         | Value             |
-| ----------------- | ----------------- |
-| **Default Value** | Null              |
-| **Depends On**    | None              |
-| **Mandatory**     | No                |
-| **Multiple**      | No                |
-| **Value Type**    | String|Expression |
+| Attribute          | Value              |
+| ------------------ | ------------------ |
+| **Default Value**  | Null               |
+| **Depends On**     | None               |
+| **Mandatory**      | No                 |
+| **Multiple**       | No                 |
+| **Value Type**     | String\|Expression |
 
 Provides the script inline, with batches separated by lines that hold only GO or GO followed by a repeat count.
 Takes priority over CommandFile, and one of the two is required.
-When the SQL contains a space followed by two dashes or two closing braces, use CommandFile or pass the script as UTF-8 Base64 with the Base64 switch, because those characters end an inline argument value.
+For SQL with `}}`, or with a space or line break followed directly by two dashes and a letter, digit, or one of `, / . $ *` (such as `--note`), use CommandFile or pass the text as UTF-8 Base64 with the Base64 switch, because those sequences can end the inline argument early so the rest of the SQL never runs.
+The script takes no Parameters, and macros resolve only in plain CommandText because Base64 text is decoded after macro resolution, so use InvokeSqlServerNonQuery to bind values from earlier steps.
 
 ### Command Timeout (CommandTimeout)
 
@@ -384,74 +434,31 @@ Missing, negative, or non-numeric values fall back to the 30-second default.
 
 ### Connection String (ConnectionString)
 
-| Attribute         | Value             |
-| ----------------- | ----------------- |
-| **Default Value** | Null              |
-| **Depends On**    | None              |
-| **Mandatory**     | No                |
-| **Multiple**      | No                |
-| **Value Type**    | String|Expression |
+| Attribute          | Value              |
+| ------------------ | ------------------ |
+| **Default Value**  | Null               |
+| **Depends On**     | None               |
+| **Mandatory**      | No                 |
+| **Multiple**       | No                 |
+| **Value Type**     | String\|Expression |
 
-Supplies a full ADO.NET connection string, such as Server=localhost,1433;Database=Sales;Integrated Security=true.
-Used only when Credentials is not set, and discrete values such as Server or Database still override its parts.
+Supplies a full ADO.NET connection string, such as `Server=localhost,1433;Database=Sales;Integrated Security=True;TrustServerCertificate=True`.
+Applies only when Credentials is not set, so a stored credentials reference always takes priority.
+Every connection setting, such as the server, the database, the login, and the encryption mode, is written into the string itself.
 
 ### Credentials (Credentials)
 
-| Attribute         | Value             |
-| ----------------- | ----------------- |
-| **Default Value** | Null              |
-| **Depends On**    | None              |
-| **Mandatory**     | No                |
-| **Multiple**      | No                |
-| **Value Type**    | String|Expression |
+| Attribute          | Value              |
+| ------------------ | ------------------ |
+| **Default Value**  | Null               |
+| **Depends On**     | None               |
+| **Mandatory**      | No                 |
+| **Multiple**       | No                 |
+| **Value Type**     | String\|Expression |
 
-Names a stored SQL Server credentials record by its name or id, such as sql-production.
-Keeps server addresses, logins, and secrets out of the flow because the record supplies the connection at runtime.
-When no record matches, a value that contains an equals sign is used as a raw connection string and any other value is used as a raw Microsoft Entra access token.
-Takes priority over ConnectionString when both are set.
-
-### Database (Database)
-
-| Attribute         | Value             |
-| ----------------- | ----------------- |
-| **Default Value** | Null              |
-| **Depends On**    | None              |
-| **Mandatory**     | No                |
-| **Multiple**      | No                |
-| **Value Type**    | String|Expression |
-
-Sets the database the connection opens, overriding the database from the credentials record or the connection string.
-Lets one stored login reach several databases on the same server.
-
-### Encrypt (Encrypt)
-
-| Attribute         | Value             |
-| ----------------- | ----------------- |
-| **Default Value** | Null              |
-| **Depends On**    | None              |
-| **Mandatory**     | No                |
-| **Multiple**      | No                |
-| **Value Type**    | String            |
-
-Sets how the connection encrypts traffic between the automation and SQL Server.
-Overrides the encryption mode from the credentials record or the connection string.
-
-#### Values
-
-##### Mandatory
-
-Requires an encrypted connection and validates the server certificate unless TrustServerCertificate is set.
-Matches the default of the Microsoft SQL Server data provider.
-
-##### Optional
-
-Encrypts traffic only when the server asks for it.
-Suits older or internal servers that do not offer encryption.
-
-##### Strict
-
-Uses TDS 8.0 strict encryption, where the secure handshake happens before any login data is sent.
-Requires SQL Server 2022 or Azure SQL and always validates the server certificate.
+Names a stored SQL Server credentials record by name or id, such as `sql-production`, so secrets stay out of the rule.
+The record carries the server, port, database, login, and encryption settings, so the step never repeats them.
+When no record matches, a value that contains `=` is used as a raw connection string and any other value is used as a raw Microsoft Entra access token.
 
 ### No Entity (NoEntity)
 
@@ -467,59 +474,19 @@ Omits the response entity so the step returns its results only as session parame
 Keeps the response small when results are large and only later steps read them.
 Session parameters such as InvokeSqlServerScript:BatchCount are still written.
 
-### Password (Password)
-
-| Attribute         | Value             |
-| ----------------- | ----------------- |
-| **Default Value** | Null              |
-| **Depends On**    | None              |
-| **Mandatory**     | No                |
-| **Multiple**      | No                |
-| **Value Type**    | String|Expression |
-
-Sets the password for the SQL Server or Microsoft Entra login, overriding the password from the credentials record or the connection string.
-Prefer Credentials over an inline password so secrets stay out of the flow definition.
-
-### Port (Port)
-
-| Attribute         | Value             |
-| ----------------- | ----------------- |
-| **Default Value** | Null              |
-| **Depends On**    | None              |
-| **Mandatory**     | No                |
-| **Multiple**      | No                |
-| **Value Type**    | Number            |
-
-Sets the TCP port added to Server, such as 1433 for a default SQL Server instance.
-Applies only when Server is set in the same step, and values of 0 or less are ignored.
-
-### Server (Server)
-
-| Attribute         | Value             |
-| ----------------- | ----------------- |
-| **Default Value** | Null              |
-| **Depends On**    | None              |
-| **Mandatory**     | No                |
-| **Multiple**      | No                |
-| **Value Type**    | String|Expression |
-
-Sets the SQL Server host name, address, or named instance, such as localhost or db01\SQLEXPRESS.
-Overrides the server from the credentials record or the connection string and is required when neither supplies one.
-Combine it with Port to reach a specific TCP port.
-
 ### Token (Token)
 
-| Attribute         | Value             |
-| ----------------- | ----------------- |
-| **Default Value** | Null              |
-| **Depends On**    | None              |
-| **Mandatory**     | No                |
-| **Multiple**      | No                |
-| **Value Type**    | String|Expression |
+| Attribute          | Value              |
+| ------------------ | ------------------ |
+| **Default Value**  | Null               |
+| **Depends On**     | None               |
+| **Mandatory**      | No                 |
+| **Multiple**       | No                 |
+| **Value Type**     | String\|Expression |
 
-Supplies a raw Microsoft Entra access token that authenticates the connection.
-Fits pipelines that already hold a token for the database resource, and needs Server or a connection string because a token carries no server address.
-Do not combine it with Password or an Authentication value, because the data provider rejects a connection that sets both.
+Supplies a raw Microsoft Entra access token that signs in the connection.
+Enables token sign-in without a stored password, next to a Credentials record or a ConnectionString that carries no password.
+Do not combine it with a connection string that carries a password or an Authentication keyword, because the SQL Server client rejects that mix when the connection opens.
 
 ### Transaction (Transaction)
 
@@ -534,33 +501,6 @@ Do not combine it with Password or an Authentication value, because the data pro
 Runs every batch of the script inside one transaction that commits after the last batch succeeds.
 Rolls back all earlier batches when any batch fails, so the database never keeps a half-applied script.
 Statements that SQL Server does not allow inside a transaction, such as CREATE DATABASE, fail when the switch is present.
-
-### Trust Server Certificate (TrustServerCertificate)
-
-| Attribute         | Value             |
-| ----------------- | ----------------- |
-| **Default Value** | Null              |
-| **Depends On**    | None              |
-| **Mandatory**     | No                |
-| **Multiple**      | No                |
-| **Value Type**    | Switch            |
-
-Accepts the server certificate without checking it against a trusted certificate authority.
-Needed for local or test servers that use a self-signed certificate, such as a developer instance on localhost,1433.
-Avoid it on production servers because it removes protection against impersonated servers.
-
-### Username (Username)
-
-| Attribute         | Value             |
-| ----------------- | ----------------- |
-| **Default Value** | Null              |
-| **Depends On**    | None              |
-| **Mandatory**     | No                |
-| **Multiple**      | No                |
-| **Value Type**    | String|Expression |
-
-Sets the login name used with Password, overriding the user from the credentials record or the connection string.
-For a Microsoft Entra service principal, the value carries the application client id.
 
 ## Scope
 

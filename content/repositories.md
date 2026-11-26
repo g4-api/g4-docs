@@ -4,17 +4,17 @@ Browse every registered source. Imported pages retain their original repository 
 
 | Repository | Area | Documentation | Status |
 | --- | --- | --- | --- |
-| [G4 Studio](https://github.com/g4-api/g4-vscode-extension) | Studio | [90 pages](./products/g4-vscode-extension/README.md) | Import enabled |
+| [G4 Studio](https://github.com/g4-api/g4-vscode-extension) | Studio | [92 pages](./products/g4-vscode-extension/README.md) | Import enabled |
 | [Test Wright for VS Code](https://github.com/g4-api/g4-test-wright-vscode-extension) | Testing | [42 pages](./products/g4-test-wright-vscode-extension/README.md) | Import enabled |
 | [Test Wright desktop](https://github.com/g4-api/g4-test-wright) | Testing | [1 pages](./products/g4-test-wright/README.md) | Import enabled |
 | [G4 Hub](https://github.com/g4-api/g4-services) | Hub | [39 pages](./products/g4-services/README.md) | Import enabled |
-| [Plugin catalog](https://github.com/g4-api/g4-plugins) | Plugins | [173 pages](./products/g4-plugins/README.md) | Import enabled |
-| [G4 Recorders](https://github.com/g4-api/g4-recorders) | Recorders | [20 pages](./products/g4-recorders/README.md) | Import enabled |
-| [UIA Driver Server](https://github.com/g4-api/uia-driver-server) | Drivers and SDKs | [10 pages](./products/uia-driver-server/README.md) | Import enabled |
+| [Plugin catalog](https://github.com/g4-api/g4-plugins) | Plugins | [203 pages](./products/g4-plugins/README.md) | Import enabled |
+| [G4 Recorders](https://github.com/g4-api/g4-recorders) | Recorders | [22 pages](./products/g4-recorders/README.md) | Import enabled |
+| [UIA Driver Server](https://github.com/g4-api/uia-driver-server) | Drivers and SDKs | [11 pages](./products/uia-driver-server/README.md) | Import enabled |
 | [SAP Driver Server](https://github.com/g4-api/sap-driver-server) | Drivers and SDKs | [5 pages](./products/sap-driver-server/README.md) | Import enabled |
-| [G4 WebDriver client](https://github.com/g4-api/g4-web-driver-client) | Drivers and SDKs | [15 pages](./products/g4-web-driver-client/README.md) | Import enabled |
-| [G4 API client](https://github.com/g4-api/g4-api-client) | Drivers and SDKs | [2 pages](./products/g4-api-client/README.md) | Import enabled |
-| [G4 Abstraction](https://github.com/g4-api/g4-abstraction) | Drivers and SDKs | [6 pages](./products/g4-abstraction/README.md) | Import enabled |
+| [G4 WebDriver client](https://github.com/g4-api/g4-web-driver-client) | Drivers and SDKs | [16 pages](./products/g4-web-driver-client/README.md) | Import enabled |
+| [G4 API client](https://github.com/g4-api/g4-api-client) | Drivers and SDKs | [3 pages](./products/g4-api-client/README.md) | Import enabled |
+| [G4 Abstraction](https://github.com/g4-api/g4-abstraction) | Drivers and SDKs | [4 pages](./products/g4-abstraction/README.md) | Import enabled |
 | [G4 Sandbox](https://github.com/g4-api/g4-sandbox) | Deploy and operate | [3 pages](./products/g4-sandbox/README.md) | Import enabled |
 | [G4 Bot Monitor](https://github.com/g4-api/g4-bot-monitor) | Deploy and operate | [1 pages](./products/g4-bot-monitor/README.md) | Import enabled |
 | [G4 Grid](https://github.com/g4-api/g4-grid) | Deploy and operate | [1 pages](./products/g4-grid/README.md) | Import enabled |
