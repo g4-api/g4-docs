@@ -52,7 +52,7 @@ Provide inline JSON content through the `argument` property.
 Select a single value using a JSONPath expression defined in `OnElement`.
 The selected value is serialized as JSON before further processing.
 A regular expression `"[^"]+"` is applied to the value attribute to extract the inner string.
-The extracted value is converted to Base64 and stored in the session parameter `ReadJson:ReadJsonResult`.
+The extracted value is converted to Base64 and stored in the session parameter `ReadJson:Result`.
 
 **CSharp:**
 
@@ -60,9 +60,9 @@ The extracted value is converted to Base64 and stored in the session parameter `
 var actionRule = new ActionRuleModel
 {
     PluginName = "ReadJson",
-    Argument = "{"name":"alpha","count":3}",
+    Argument = "{\"name\":\"alpha\",\"count\":3}",
     OnElement = "$.name",
-    RegularExpression = ""[^"]+""
+    RegularExpression = "\"[^\"]+\""
 };
 ```
 
@@ -71,9 +71,9 @@ var actionRule = new ActionRuleModel
 ```java
 ActionRuleModel actionRule = new ActionRuleModel()
     .setPluginName("ReadJson")
-    .setArgument("{"name":"alpha","count":3}")
+    .setArgument("{\"name\":\"alpha\",\"count\":3}")
     .setOnElement("$.name")
-    .setRegularExpression(""[^"]+"");
+    .setRegularExpression("\"[^\"]+\"");
 ```
 
 **Javascript:**
@@ -81,9 +81,9 @@ ActionRuleModel actionRule = new ActionRuleModel()
 ```js
 var actionRule = {
     pluginName: "ReadJson",
-    argument: "{"name":"alpha","count":3}",
+    argument: "{\"name\":\"alpha\",\"count\":3}",
     onElement: "$.name",
-    regularExpression: ""[^"]+""
+    regularExpression: "\"[^\"]+\""
 };
 ```
 
@@ -92,9 +92,9 @@ var actionRule = {
 ```js
 {
     "pluginName": "ReadJson",
-    "argument": "{"name":"alpha","count":3}",
+    "argument": "{\"name\":\"alpha\",\"count\":3}",
     "onElement": "$.name",
-    "regularExpression": ""[^"]+""
+    "regularExpression": "\"[^\"]+\""
 }
 ```
 
@@ -103,9 +103,9 @@ var actionRule = {
 ```python
 action_rule = {
     "pluginName": "ReadJson",
-    "argument": "{"name":"alpha","count":3}",
+    "argument": "{\"name\":\"alpha\",\"count\":3}",
     "onElement": "$.name",
-    "regularExpression": ""[^"]+""
+    "regularExpression": "\"[^\"]+\""
 }
 ```
 
@@ -117,7 +117,7 @@ Load JSON content from a file path provided in the `argument` property.
 Use a JSONPath expression in `OnElement` to select multiple values.
 The selected tokens are serialized into a JSON array.
 A regular expression `\d+` is applied to the value attribute to extract numeric content.
-The matched value is converted to Base64 and written to the session parameter `ReadJson:ReadJsonResult`.
+The matched value is converted to Base64 and written to the session parameter `ReadJson:Result`.
 
 **CSharp:**
 
@@ -127,7 +127,7 @@ var actionRule = new ActionRuleModel
     PluginName = "ReadJson",
     Argument = "data.json",
     OnElement = "$.items[*].id",
-    RegularExpression = "\d+"
+    RegularExpression = "\\d+"
 };
 ```
 
@@ -138,7 +138,7 @@ ActionRuleModel actionRule = new ActionRuleModel()
     .setPluginName("ReadJson")
     .setArgument("data.json")
     .setOnElement("$.items[*].id")
-    .setRegularExpression("\d+");
+    .setRegularExpression("\\d+");
 ```
 
 **Javascript:**
@@ -148,7 +148,7 @@ var actionRule = {
     pluginName: "ReadJson",
     argument: "data.json",
     onElement: "$.items[*].id",
-    regularExpression: "\d+"
+    regularExpression: "\\d+"
 };
 ```
 
@@ -159,7 +159,7 @@ var actionRule = {
     "pluginName": "ReadJson",
     "argument": "data.json",
     "onElement": "$.items[*].id",
-    "regularExpression": "\d+"
+    "regularExpression": "\\d+"
 }
 ```
 
@@ -170,7 +170,7 @@ action_rule = {
     "pluginName": "ReadJson",
     "argument": "data.json",
     "onElement": "$.items[*].id",
-    "regularExpression": "\d+"
+    "regularExpression": "\\d+"
 }
 ```
 
@@ -182,7 +182,7 @@ Supply inline JSON using the `argument` property.
 Select a nested object using the JSONPath expression defined in `OnElement`.
 The selected result is serialized as JSON.
 No filtering is applied because no regular expression is provided.
-The serialized JSON is converted to Base64 and saved in the session parameter `ReadJson:ReadJsonResult`.
+The serialized JSON is converted to Base64 and saved in the session parameter `ReadJson:Result`.
 
 **CSharp:**
 
@@ -190,7 +190,7 @@ The serialized JSON is converted to Base64 and saved in the session parameter `R
 var actionRule = new ActionRuleModel
 {
     PluginName = "ReadJson",
-    Argument = "{"config":{"enabled":true,"level":"high"}}",
+    Argument = "{\"config\":{\"enabled\":true,\"level\":\"high\"}}",
     OnElement = "$.config"
 };
 ```
@@ -200,7 +200,7 @@ var actionRule = new ActionRuleModel
 ```java
 ActionRuleModel actionRule = new ActionRuleModel()
     .setPluginName("ReadJson")
-    .setArgument("{"config":{"enabled":true,"level":"high"}}")
+    .setArgument("{\"config\":{\"enabled\":true,\"level\":\"high\"}}")
     .setOnElement("$.config");
 ```
 
@@ -209,7 +209,7 @@ ActionRuleModel actionRule = new ActionRuleModel()
 ```js
 var actionRule = {
     pluginName: "ReadJson",
-    argument: "{"config":{"enabled":true,"level":"high"}}",
+    argument: "{\"config\":{\"enabled\":true,\"level\":\"high\"}}",
     onElement: "$.config"
 };
 ```
@@ -219,7 +219,7 @@ var actionRule = {
 ```js
 {
     "pluginName": "ReadJson",
-    "argument": "{"config":{"enabled":true,"level":"high"}}",
+    "argument": "{\"config\":{\"enabled\":true,\"level\":\"high\"}}",
     "onElement": "$.config"
 }
 ```
@@ -229,14 +229,14 @@ var actionRule = {
 ```python
 action_rule = {
     "pluginName": "ReadJson",
-    "argument": "{"config":{"enabled":true,"level":"high"}}",
+    "argument": "{\"config\":{\"enabled\":true,\"level\":\"high\"}}",
     "onElement": "$.config"
 }
 ```
 
 ## Output Parameter
 
-### Read Json Read Json Result (ReadJson:ReadJsonResult)
+### Read Json Result (ReadJson:Result)
 
 | Attribute         | Value             |
 | ----------------- | ----------------- |
@@ -254,13 +254,13 @@ Its value can be referenced by other parameters or expressions in the workflow.
 
 ### Argument (Argument)
 
-| Attribute         | Value             |
-| ----------------- | ----------------- |
-| **Default Value** | Null              |
-| **Depends On**    | None              |
-| **Mandatory**     | Yes               |
-| **Multiple**      | No                |
-| **Value Type**    | String|Expression |
+| Attribute          | Value              |
+| ------------------ | ------------------ |
+| **Default Value**  | Null               |
+| **Depends On**     | None               |
+| **Mandatory**      | Yes                |
+| **Multiple**       | No                 |
+| **Value Type**     | String\|Expression |
 
 Provides the JSON input to be read and processed by the plugin.
 The value can be either a file path pointing to a JSON file or raw JSON content provided inline.
@@ -284,7 +284,7 @@ Using a precise path ensures only the relevant data is read and passed to later 
 
 | Attribute         | Value             |
 | ----------------- | ----------------- |
-| **Default Value** | Null              |
+| **Default Value** | (?s).*            |
 | **Depends On**    | None              |
 | **Mandatory**     | No                |
 | **Multiple**      | No                |

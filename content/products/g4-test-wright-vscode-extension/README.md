@@ -52,7 +52,7 @@ The G4 Test Wright side bar has a **Documentation** view under **Test Wright**. 
 * **Environments** — pick one of the workspace `environments/` files; it is sent to the engine and set as the bots' default environment.
 * **Honest statuses** — a bot **fails** only when an assertion fails. An exception without a failed assertion is a **warning** (Allure *broken*).
 * **Run history** — every run is saved under `reports/<run>/` with a `run.json` summary and one G4 report per bot. Open any run, drill into a bot's report, or drag the run back into the plan to rerun it.
-* **Allure 3 built in** — runs write Allure results to `reports/allure-<run>`, and Test Wright builds the Allure 3 report for one run or merges all of them, in a VS Code tab or your browser. No Java needed.
+* **Allure 3 built in** — runs write Allure results to `reports/<run>-allure`, and Test Wright builds the Allure 3 report for one run or merges all of them, in a VS Code tab or your browser. No Java needed.
 * **Scheduling** — schedule up to five runs; they fire even when the Test Wright tab is closed.
 
 ## Commands
@@ -65,7 +65,7 @@ Every command is listed under the `G4 Test Wright` category in the Command Palet
 | `TestWright.OpenNew` | Open New Test Wright Tab | Command Palette; the **Open Test Wright** link in the launcher view | Opens another Test Wright tab, even when one is open. | Tabs share one saved session. |
 | `TestWright.AddPracticeBots` | Add Practice Bots | Command Palette; the **Add Practice Bots** link in the launcher view | Copies the practice bots into the open project. | Needs a G4 project (the folder that holds `manifest.json`). Existing files are kept. |
 | `TestWright.ShowRunReport` | Open Run Report | Explorer menu for a `run.json` file | Opens the summary of that run. | Hidden from the Command Palette. Select a `run.json` first. |
-| `TestWright.ConvertRunToAllure` | Convert Run to Allure Results | Explorer menu for a `run.json` file | Writes the Allure results (`allure-<run>/results`) for that run. | Hidden from the Command Palette. Select a `run.json` first. |
+| `TestWright.ConvertRunToAllure` | Convert Run to Allure Results | Explorer menu for a `run.json` file | Writes the Allure results (`<run>-allure/results`) for that run. | Hidden from the Command Palette. Select a `run.json` first. |
 | `TestWright.RefreshDocuments` | Refresh Documentation | Title bar of the **Documentation** view | Reads the learning paths folder again. | Hidden from the Command Palette. |
 | `TestWright.ShowComponentGallery` | Show Component Gallery (Development) | Command Palette, only in the Extension Development Host | Opens the gallery of the `g4-*` webview components. | For contributors. |
 
@@ -83,7 +83,7 @@ Bots tree, plan, repositories  ⇄   Discovery      bots/ → tests and suites
                                     Run service    POST /api/v4/g4/automation/invoke
                                     Evaluator      response → passed/failed/warning/broken
                                     Repositories   reports/<run>/run.json, *.g4rpt
-                                    Allure         allure-<run>/results → Allure 3 report
+                                    Allure         <run>-allure/results → Allure 3 report
                                     Scheduler      timed runs (kept in the workspace)
 ```
 
@@ -116,11 +116,15 @@ bot's **columns**; a bot without them is **static** and runs unchanged.
   runs every item, then iteration 2 runs every item again with the next row. Each item sends its row
   as a one-row data source (Base64), which replaces the bot's own `dataSource` for that run only.
   Static bots run in every iteration. A plan with no iterations runs once, as before.
+* A bot that runs its **own** `dataSource` (a plan without iterations) gets every row back from the engine in one
+  answer. Test Wright splits that answer into **one execution per data row**, so each row is its own test in the
+  panel, the run report, `run.json`, and Allure, named `data row N`. A row the engine returned no result for is
+  recorded as broken.
 * **Import** and **Export** read and write the iterations as a JSON data file (`g4-test-wright-data`).
   Items match by key in the same plan, or by position and bot in another plan.
-* Results: each execution is recorded with its position, iteration, and values (`run.json`, the run
-  report, and Allure parameters); a plan row shows its worst iteration, for example
-  `1/2 iterations passed`.
+* Results: each execution is recorded with its position, iteration or data row, and values (`run.json`, the run
+  report, and Allure parameters); a plan row shows its worst iteration or data row, for example
+  `1/2 iterations passed` or `2/3 data rows passed`.
 
 Plans saved with iterations are version 2 plan files; version 1 plans still load.
 
@@ -142,11 +146,12 @@ Every run creates one folder under the project's reports folder, and its Allure 
 
 ```none
 reports/
-├── 2026-10-08-213643907/          # run name: yyyy-MM-dd-HHmmssfff
+├── 20261008-213643/               # run name: yyyyMMdd-HHmmss
 │   ├── run.json                   # run summary: settings, tally, one entry per execution
 │   ├── a.p1.g4rpt                 # G4 automation report per execution (Base64 JSON)
-│   └── smoke.login.p2.i1.g4rpt    # plan position 2, iteration 1
-├── allure-2026-10-08-213643907/
+│   ├── smoke.login.p2.i1.g4rpt    # plan position 2, iteration 1
+│   └── users.p3.r2.g4rpt          # plan position 3, row 2 of the bot's own data source
+├── 20261008-213643-allure/
 │   ├── results/                   # written when Collect is on
 │   └── report/                    # built when you open the Allure report
 └── allure-merged/                 # built when you open the report of several runs
@@ -208,4 +213,16 @@ Press **F5** in VS Code to start an Extension Development Host. In that host, **
 
 ## Contributing and builds
 
-Build tools, test commands, version numbers, Docker images and development ports are in the [build, test and release guide](../g4-github-actions/docs/build-test-release.md).
+Build and test with Node.js from the repository root:
+
+```powershell
+npm ci
+npm run lint
+npm run test:unit
+npm run compile
+```
+
+`npm run test:unit` compiles the tests under `src/test/unit` and runs them with mocha in plain Node, with a stand-in for
+the `vscode` module. The tests cover how Test Wright reports engine responses, including Parallel containers and Input
+Actions Groups. The release pipeline runs the lint and the unit tests on every release and stops when either fails.
+Changes are listed in the [changelog](docs/CHANGELOG.md).

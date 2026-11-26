@@ -1,8 +1,8 @@
-# Module 3: Merged and legacy folders
+# Module 3: Run and merged folders
 
 [⬅ Back to overview](README.md)
 
-⏱️ **About 6 minutes**
+⏱️ **About 5 minutes**
 
 📍 **Where you are:** **Generate**. Before the report is built, Test Wright works out which results folders your selection covers.
 
@@ -10,7 +10,7 @@ In this module, you will:
 
 - Learn the four things you can select
 - Find where a single report and a merged report are written
-- Find the results of runs saved with an older layout
+- Know why a second **Open** for the same report is refused
 
 ---
 
@@ -21,8 +21,8 @@ In **Allure Reports**, the **Allure folder** can be any of these. Test Wright tr
 | You select | What Test Wright uses |
 | --- | --- |
 | A results folder (it holds `*-result.json` files) | That folder. |
-| A run folder (it holds `run.json`) | `allure-<run>/results` beside it. |
-| A run's `allure-<run>` folder | Its `results` folder. |
+| A run folder (it holds `run.json`) | `<run>-allure/results` beside it. |
+| A run's `<run>-allure` folder | Its `results` folder. |
 | Any other folder, such as the reports folder | Every results folder found inside it. The search goes into subfolders, up to three levels deep. |
 
 ![The Allure folder box with the reports folder selected](images/03-allure-folder.png)
@@ -37,12 +37,12 @@ The report folder depends on how many results folders were found:
 
 | Found | Report folder | Report name |
 | --- | --- | --- |
-| One | `allure-<run>/report` | `G4 Run <run>` |
+| One | `<run>-allure/report` | `G4 Run <run>` |
 | Several | `allure-merged`, inside the folder you selected | `G4 Runs (N)` |
 
 ```text
 reports/
-    allure-2026-11-08-101500/
+    20261108-101500-allure/
         results/
         report/                     the report of one run
     allure-merged/                  the merged report of every run below reports/
@@ -58,24 +58,7 @@ A run made with **Collect** off has no results yet. If you select its run folder
 
 ---
 
-## Step 4: Know the legacy layout
-
-Older runs kept their results **inside** the run folder:
-
-```text
-reports/
-    2026-10-01-090000/
-        run.json
-        allure-results/             the old place
-```
-
-Test Wright still reads these, with one rule: a run's old `allure-results` folder is used **only** when that run has no `allure-<run>/results` beside it. If you convert such a run again, the new folder is written and the old one is ignored from then on.
-
-For a single old run, the report is written to the run's new `allure-<run>/report` folder.
-
----
-
-## Step 5: Know the one-at-a-time rule
+## Step 4: Know the one-at-a-time rule
 
 Two generations into the same report folder would overwrite each other's files. While one is running, a second **Open** for the same report folder is refused with: `This Allure report is already being generated. Wait for it to open.` The **Open** button also stays off during a generation.
 
@@ -93,7 +76,6 @@ Select the reports folder and press **Open** twice quickly.
 
 - [ ] You know the four things you can select
 - [ ] You can say where one report and a merged report are written
-- [ ] You know when an old `allure-results` folder is used
 - [ ] You know what the "already being generated" message means
 
 ---

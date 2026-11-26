@@ -15,7 +15,7 @@ A recording client collects the events a recorder broadcasts and turns them into
 
 ## Capture modes
 
-A UIA recorder can run in three modes. Chromium always records in `standard` mode (`RecordingsRepository.cs`, `ResolveRecorder`).
+A UIA recorder can run in three modes. Chromium and Android always record in `standard` mode (`RecordingsRepository.cs`, `ResolveRecorder`).
 
 | Mode | Meaning | Rules use |
 | --- | --- | --- |
@@ -23,7 +23,7 @@ A UIA recorder can run in three modes. Chromium always records in `standard` mod
 | `user32` | Physical input with element locators. | `User32` plugins with a locator. Offsets are optional (`useOffset`). |
 | `coordinate` | Physical input at absolute positions. | `User32` plugins with no locator. |
 
-The Hub accepts only these three mode names, in lower case, and only the drivers `ChromeDriver` and `UiaDriver`. Anything else is refused with "Recorder mode must be standard, user32, or coordinate." or "Recorder driver must be ChromeDriver or UiaDriver." (`RecordingsRepository.cs:412-415`).
+The Hub accepts only these three mode names, in lower case, and only the drivers `AndroidDriver`, `ChromeDriver` and `UiaDriver`. Anything else is refused with "Recorder mode must be standard, user32, or coordinate." or "Recorder driver must be AndroidDriver, ChromeDriver or UiaDriver." (`RecordingsRepository.cs:410-415`).
 
 ## UIA events to plugins
 
@@ -55,6 +55,7 @@ The button is the first word of the event name. Only the release (`Up`) event pr
 | --- | --- | --- |
 | `Left Up` | `standard` | `InvokeClick` |
 | `Left Up` | `user32`, `coordinate` | `InvokeUser32Click` |
+| `Left Up` with `value.drag` | `standard`, `user32`, `coordinate` | `InvokeUser32DragAndDrop` |
 | `Middle Up` | `standard` | `InvokeMiddleClick` |
 | `Middle Up` | `user32`, `coordinate` | `InvokeUser32MiddleClick` |
 | `Right Up` | `standard` | `InvokeContextClick` |
@@ -64,6 +65,16 @@ The button is the first word of the event name. Only the release (`Up`) event pr
 Arguments and locators (`NewMouseRule`):
 
 - In `coordinate` mode the argument is `{{$ --X:<x> --Y:<y>}}`, taken from `value.x` and `value.y`, and the rule has no locator.
+- A drag and drop always becomes `InvokeUser32DragAndDrop`, because UI Automation has no drag pattern. Each end is an element point when the element has a usable locator, and a screen point otherwise:
+
+    | End | Element | No usable element |
+    | --- | --- | --- |
+    | Start | `onElement`, with `--Alignment:TopLeft --OffsetX --OffsetY` when the grab point was measured | `--X --Y`, the press point |
+    | End, start on an element | `--Target:<locator>`, with `--TargetAlignment:TopLeft --TargetOffsetX --TargetOffsetY` when the drop point was measured | `--DeltaX --DeltaY` from the press point, so the drop follows the element when the window moves |
+    | End, start at a screen point | `--Target:<locator>` and its offsets | `--TargetX --TargetY`, the release point |
+
+- In `coordinate` mode both ends are screen points: `{{$ --X:<press x> --Y:<press y> --TargetX:<release x> --TargetY:<release y>}}`, with no locator. A screen point replays correctly only on the same screen layout, so element points are preferred wherever a locator exists.
+- Offsets are measured from the top-left corner, which the UIA driver applies on every version.
 - In the other modes the rule gets the `chain.locator`. If it is empty, the builder falls back to `chain.fallbackLocator`.
 - With `user32` mode and `useOffset` on, the builder reads `chain.mouseOffset`. If that is empty it falls back to an event-level `offset`, which current recorders do not send. A non-zero offset gives the argument `{{$ --OffsetX:<x> --OffsetY:<y> --Alignment:TopLeft}}`.
 
@@ -80,9 +91,14 @@ Chromium events arrive with plugin names already in `event`. The builder keeps t
 | `UpdatePage`, `UndoNavigation`, `RedoNavigation` | none | No |
 | `SwitchWindow`, `CloseWindow` | `<value.index>`, or `0` | No |
 | `InvokeScroll` | `{{$ --direction:<direction> --times:<notches>}}` (defaults: `Down`, `1`) | Yes |
+| `InvokeDragAndDrop` | `{{$ --Target:<drop locator>}}`, plus `--TargetLocator:<type>` for a type other than XPath, or `{{$ --DeltaX:<deltaX> --DeltaY:<deltaY>}}` without a usable drop element | Yes |
 | Any other name, such as `InvokeClick` | none | Yes |
 
 Unknown event names pass through as element actions, so new extension plugins keep their locator. Events without an `event` name are skipped. The full list of names is in [Chromium events](chromium-events.md).
+
+## Android events to plugins
+
+Android events also arrive with plugin names in `event`, and their chains run target first, so the builder converts them with the same Chromium rules (`NewJob`, `IsLaunchable`). `InvokeClick`, `InvokeLongClick` and `SendKeys` keep their locator, `InvokeScroll` gets the same argument as above, and `SwitchActivity` and `HideSoftKeyboard` carry an empty locator, so their rules have no `onElement`. The recorder's last job ends with `CloseBrowser`, which closes the Appium session on replay. The full list of names is in [Android events](android-events.md).
 
 ## Think time
 
@@ -90,7 +106,7 @@ When think time is on, the builder adds a `WaitFlow` action between two rules wh
 
 ## What is not mapped
 
-- SAP recorders. The Hub accepts only `ChromeDriver` and `UiaDriver`, and the builder has no code for the `user32` and `nativeSap` streams (a search for `nativeSap` in the Hub `Recordings` folder finds nothing). A SAP recording has to be consumed from the hub directly. See [SAP messages](sap-message.md).
+- SAP recorders. The Hub accepts only `AndroidDriver`, `ChromeDriver` and `UiaDriver`, and the builder has no code for the `user32` and `nativeSap` streams (a search for `nativeSap` in the Hub `Recordings` folder finds nothing). A SAP recording has to be consumed from the hub directly. See [SAP messages](sap-message.md).
 - Pre and post scripts. The Hub refuses them with "Pre/post scripts are deferred to a later layer; disable their flags." (`RecordingsRepository.cs`).
 
 ## Next

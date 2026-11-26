@@ -106,7 +106,43 @@ experiment with changes, or run the test suites yourself. You will need Git and 
     ```
 
 The automated [release pipeline](./.github/workflows/release-pipeline.yml) builds the solution and runs unit and
-Microsoft Edge integration tests before publishing the NuGet packages.
+Microsoft Edge integration tests before publishing the NuGet packages. A failed test stops the release.
+
+### Local-only tests
+
+Tests that need something a hosted runner does not have carry `[TestCategory("LocalOnly")]`. The release pipeline
+excludes them with `TestCategory!=LocalOnly`; run them on your workstation.
+
+| Tests | What they need |
+| --- | --- |
+| Machine-scope cases of `CopyParameter`, `GetParameter` and `RegisterParameter` | An elevated (administrator) prompt, because they write Machine environment variables. |
+| Live UIA tests (`UiaDriver` category) | A running UIA driver server (2026.11.26.46 or later) and a Windows desktop. Set `Uia.DriverServer`, and the test application paths `Uia.ClickApplication` and `Uia.DragAndDropApplication`, in the run settings. Without them the tests report Inconclusive. |
+
+The live UIA tests drive two small test applications in `test/Apps`. Build them once and point the run settings at
+the executables:
+
+| Application | Run setting | Used by |
+| --- | --- | --- |
+| `test/Apps/UiaClickLab` (Windows Forms) | `Uia.ClickApplication` | `User32ClickLiveTests` |
+| `test/Apps/UiaDragDropLab` (WPF) | `Uia.DragAndDropApplication` | The live `InvokeUser32DragAndDrop` tests |
+
+```powershell
+dotnet build ./test/Apps/UiaClickLab/UiaClickLab.csproj
+dotnet build ./test/Apps/UiaDragDropLab/UiaDragDropLab.csproj
+```
+
+```xml
+<Parameter name="Uia.DriverServer" value="http://localhost:5555" />
+<Parameter name="Uia.ClickApplication" value="<repository>\test\Apps\UiaClickLab\bin\Debug\net10.0-windows\UiaClickLab.exe" />
+<Parameter name="Uia.DragAndDropApplication" value="<repository>\test\Apps\UiaDragDropLab\bin\Debug\net10.0-windows\UiaDragDropLab.exe" />
+```
+
+Each application writes what it received to a log next to its executable (`clicks.log`, `events.log`), which shows
+whether an input reached the window when a live test fails.
+
+```powershell
+dotnet test ./src/G4.UnitTests/G4.UnitTests.csproj --settings ./test/Settings/Local.runsettings --filter "TestCategory=LocalOnly"
+```
 
 ## G4 ecosystem
 
@@ -127,4 +163,6 @@ G4 Plugins is available under the [Apache License 2.0](./LICENSE).
 
 ## Contributing and builds
 
-Build tools, test commands, version numbers, Docker images and development ports are in the [build, test and release guide](../g4-github-actions/docs/build-test-release.md).
+Build and test the solution from the `src/` folder with the .NET 10 SDK. The unit tests need the settings file:
+`dotnet test --settings test/Settings/Local.runsettings`. The release pipeline publishes the NuGet packages from the
+`main` branch. Notable changes are listed in the [changelog](./docs/CHANGELOG.md).
